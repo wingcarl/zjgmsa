@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cruise.dao.CruiseWeekPlanDetailsDao">
+    
+	<sql id="cruiseWeekPlanDetailsColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.weekly_plan_id AS "weeklyPlanId.id",
+		a.arrange_date AS "arrangeDate",
+		a.day_cruise_people AS "dayCruisePeople",
+		a.cruise_captain AS "cruiseCaptain",
+		a.is_night_cruise AS "isNightCruise",
+		a.night_cruise_grid AS "nightCruiseGrid",
+		a.night_cruise_people AS "nightCruisePeople",
+		o.name AS "weeklyPlanId.office.name",
+		o.id AS "weeklyPlanId.office.id" 
+	</sql>
+	
+	<sql id="cruiseWeekPlanDetailsJoins">
+		LEFT JOIN cruise_week_plan b ON b.id = a.weekly_plan_id
+		JOIN sys_office o on o.id = b.office_id
+	</sql>
+    
+	<select id="get" resultType="CruiseWeekPlanDetails">
+		SELECT 
+			<include refid="cruiseWeekPlanDetailsColumns"/>
+		FROM cruise_week_plan_details a
+		<include refid="cruiseWeekPlanDetailsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CruiseWeekPlanDetails">
+		SELECT 
+			<include refid="cruiseWeekPlanDetailsColumns"/>
+		FROM cruise_week_plan_details a
+		<include refid="cruiseWeekPlanDetailsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="weeklyPlanId.id != null and weeklyPlanId.id != ''">
+				AND a.weekly_plan_id = #{weeklyPlanId.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.arrange_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findListByArrangeDate" resultType="CruiseWeekPlanDetails">
+		SELECT 
+			<include refid="cruiseWeekPlanDetailsColumns"/>
+		FROM cruise_week_plan_details a
+		<include refid="cruiseWeekPlanDetailsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="arrangeDate != null and arrangeDate != ''">
+				AND DATE_FORMAT(a.arrange_date,'%Y-%m-%d') = DATE_FORMAT(#{arrangeDate},'%Y-%m-%d')
+			</if>
+		</where>
+		
+	</select>
+	<select id="findAllList" resultType="CruiseWeekPlanDetails">
+		SELECT 
+			<include refid="cruiseWeekPlanDetailsColumns"/>
+		FROM cruise_week_plan_details a
+		<include refid="cruiseWeekPlanDetailsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cruise_week_plan_details(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			weekly_plan_id,
+			arrange_date,
+			day_cruise_people,
+			cruise_captain,
+			is_night_cruise,
+			night_cruise_grid,
+			night_cruise_people
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{weeklyPlanId.id},
+			#{arrangeDate},
+			#{dayCruisePeople},
+			#{cruiseCaptain},
+			#{isNightCruise},
+			#{nightCruiseGrid},
+			#{nightCruisePeople}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cruise_week_plan_details SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			weekly_plan_id = #{weeklyPlanId.id},
+			arrange_date = #{arrangeDate},
+			day_cruise_people = #{dayCruisePeople},
+			cruise_captain = #{cruiseCaptain},
+			is_night_cruise = #{isNightCruise},
+			night_cruise_grid = #{nightCruiseGrid},
+			night_cruise_people = #{nightCruisePeople}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cruise_week_plan_details SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE weekly_plan_id = #{weeklyPlanId.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

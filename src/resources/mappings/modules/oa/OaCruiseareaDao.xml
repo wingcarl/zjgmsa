@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oa.dao.OaCruiseareaDao">
+    
+	<sql id="oaCruiseareaColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.office_id AS "office.id",
+		a.content AS "content",
+		a.type AS "type",
+		a.grid AS "grid",
+		o8.name AS "office.name" 
+	</sql>
+	
+	<sql id="oaCruiseareaJoins">
+		LEFT JOIN sys_office o8 ON o8.id = a.office_id
+	</sql>
+    
+	<select id="get" resultType="OaCruisearea">
+		SELECT 
+			<include refid="oaCruiseareaColumns"/>
+		FROM oa_cruisearea a
+		<include refid="oaCruiseareaJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OaCruisearea">
+		SELECT 
+			<include refid="oaCruiseareaColumns"/>
+		FROM oa_cruisearea a
+		<include refid="oaCruiseareaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="grid != null and grid != ''">
+				AND a.grid = #{grid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaCruisearea">
+		SELECT 
+			<include refid="oaCruiseareaColumns"/>
+		FROM oa_cruisearea a
+		<include refid="oaCruiseareaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findCruiseareaListByOfficeId" resultType="OaCruisearea">
+		SELECT 
+			<include refid="oaCruiseareaColumns"/>
+		FROM oa_cruisearea a
+		<include refid="oaCruiseareaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="grid != null and grid != ''">
+				AND a.grid = #{grid}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="getCruiseAreaCount" resultType="java.util.Map">
+		select b.content as content,sum(a.times) as counter from oa_cruisedata_area a join oa_cruisearea b on a.oa_cruisearea_id =  b.id where a.createDate between '2017-11-1' and '2017-12-1' group by a.oa_cruisearea_id
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_cruisearea(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			office_id,
+			content,
+			type,
+			grid
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{office.id},
+			#{content},
+			#{type},
+			#{grid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_cruisearea SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			office_id = #{office.id},
+			content = #{content},
+			type = #{type},
+			grid = #{grid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE oa_cruisearea SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

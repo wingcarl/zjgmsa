@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oa.dao.OaLuyustaticsDao">
+    
+	<sql id="oaLuyustaticsColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.cyxcrs AS "cyxcrs",
+		a.cdzfcl AS "cdzfcl",
+		a.cdzfct AS "cdzfct",
+		a.jccb AS "jccb",
+		a.dkmt AS "dkmt",
+		a.wxpmt AS "wxpmt",
+		a.sgzyq AS "sgzyq",
+		a.mdtbq AS "mdtbq",
+		a.qtmt AS "qtmt",
+		a.ccwfxw AS "ccwfxw",
+		a.czwt AS "czwt",
+		a.xzcf AS "xzcf",
+		a.zhzxfk AS "zhzxfk",
+		a.xcfx AS "xcfx",
+		a.beizhu AS "beizhu",
+		u.name As "createBy.name",
+		c.name As "createBy.office.name"
+	</sql>
+	
+	<sql id="oaLuyustaticsJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+    
+	<select id="get" resultType="OaLuyustatics">
+		SELECT 
+			<include refid="oaLuyustaticsColumns"/>
+		FROM oa_luyustatics a
+		<include refid="oaLuyustaticsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OaLuyustatics">
+		SELECT 
+			<include refid="oaLuyustaticsColumns"/>
+		FROM oa_luyustatics a
+		<include refid="oaLuyustaticsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OaLuyustatics">
+		SELECT 
+			<include refid="oaLuyustaticsColumns"/>
+		FROM oa_luyustatics a
+		<include refid="oaLuyustaticsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_luyustatics(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			cyxcrs,
+			cdzfcl,
+			jccb,
+			dkmt,
+			wxpmt,
+			sgzyq,
+			mdtbq,
+			qtmt,
+			ccwfxw,
+			czwt,
+			xzcf,
+			zhzxfk,
+			xcfx,
+			beizhu
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{cyxcrs},
+			#{cdzfcl},
+			#{jccb},
+			#{dkmt},
+			#{wxpmt},
+			#{sgzyq},
+			#{mdtbq},
+			#{qtmt},
+			#{ccwfxw},
+			#{czwt},
+			#{xzcf},
+			#{zhzxfk},
+			#{xcfx},
+			#{beizhu}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_luyustatics SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			cyxcrs = #{cyxcrs},
+			cdzfcl = #{cdzfcl},
+			jccb = #{jccb},
+			dkmt = #{dkmt},
+			wxpmt = #{wxpmt},
+			sgzyq = #{sgzyq},
+			mdtbq = #{mdtbq},
+			qtmt = #{qtmt},
+			ccwfxw = #{ccwfxw},
+			czwt = #{czwt},
+			xzcf = #{xzcf},
+			zhzxfk = #{zhzxfk},
+			xcfx = #{xcfx},
+			beizhu = #{beizhu}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE oa_luyustatics SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

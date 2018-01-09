@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.flow.dao.FlowMeasureTypeDao">
+    
+	<sql id="flowMeasureTypeColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.section_name AS "sectionName",
+		a.equivalent_weight AS "equivalentWeight",
+		a.total AS "total",
+		a.up_total AS "upTotal",
+		a.up_passenger_ship AS "upPassengerShip",
+		a.up_cargo_ship AS "upCargoShip",
+		a.up_container_ship AS "upContainerShip",
+		a.up_dangerous_ship AS "upDangerousShip",
+		a.up_boat_train AS "upBoatTrain",
+		a.up_fish_boat AS "upFishBoat",
+		a.up_project_ship AS "upProjectShip",
+		a.up_public_ship AS "upPublicShip",
+		a.up_others AS "upOthers",
+		a.down_total AS "downTotal",
+		a.down_passenger_ship AS "downPassengerShip",
+		a.down_cargo_ship AS "downCargoShip",
+		a.down_container_ship AS "downContainerShip",
+		a.down_dangerous_ship AS "downDangerousShip",
+		a.down_boat_train AS "downBoatTrain",
+		a.down_fish_boat AS "downFishBoat",
+		a.down_project_ship AS "downProjectShip",
+		a.down_public_ship AS "downPublicShip",
+		a.down_others AS "downOthers",
+		a.flow_measure_date AS "flowMeasureDate"
+	</sql>
+	
+	<sql id="flowMeasureTypeJoins">
+	</sql>
+    
+	<select id="get" resultType="FlowMeasureType">
+		SELECT 
+			<include refid="flowMeasureTypeColumns"/>
+		FROM flow_measure_type a
+		<include refid="flowMeasureTypeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="FlowMeasureType">
+		SELECT 
+			<include refid="flowMeasureTypeColumns"/>
+		FROM flow_measure_type a
+		<include refid="flowMeasureTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sectionName != null and sectionName != ''">
+				AND a.section_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sectionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sectionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sectionName},'%')</if>
+			</if>
+			<if test="beginFlowMeasureDate != null and endFlowMeasureDate != null and beginFlowMeasureDate != '' and endFlowMeasureDate != ''">
+				AND a.flow_measure_date BETWEEN #{beginFlowMeasureDate} AND #{endFlowMeasureDate}
+			</if>
+			<if test="sectionList != null and sectionList.size()>0">
+			AND a.section_name IN
+			<foreach item="item" index="index" collection="sectionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			</if>
+		</where>
+		<choose>
+		<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.flow_measure_date ,a.section_name DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findListBySection" resultType="FlowMeasureType">
+		SELECT 
+			a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.section_name AS "sectionName",
+		sum(a.total) AS "total",
+		sum(a.up_total) AS "upTotal",
+		sum(a.up_passenger_ship) AS "upPassengerShip",
+		sum(a.up_cargo_ship) AS "upCargoShip",
+		sum(a.up_container_ship) AS "upContainerShip",
+		sum(a.up_dangerous_ship) AS "upDangerousShip",
+		sum(a.up_boat_train) AS "upBoatTrain",
+		sum(a.up_fish_boat) AS "upFishBoat",
+		sum(a.up_project_ship) AS "upProjectShip",
+		sum(a.up_public_ship) AS "upPublicShip",
+		sum(a.up_others) AS "upOthers",
+		sum(a.down_total) AS "downTotal",
+		sum(a.down_passenger_ship) AS "downPassengerShip",
+		sum(a.down_cargo_ship) AS "downCargoShip",
+		sum(a.down_container_ship) AS "downContainerShip",
+		sum(a.down_dangerous_ship) AS "downDangerousShip",
+		sum(a.down_boat_train) AS "downBoatTrain",
+		sum(a.down_fish_boat) AS "downFishBoat",
+		sum(a.down_project_ship) AS "downProjectShip",
+		sum(a.down_public_ship) AS "downPublicShip",
+		sum(a.down_others) AS "downOthers",
+		a.flow_measure_date AS "flowMeasureDate"
+		FROM flow_measure_Type a
+		<include refid="flowMeasureTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sectionName != null and sectionName != ''">
+				AND a.section_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sectionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sectionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sectionName},'%')</if>
+			</if>
+			<if test="sectionList != null and sectionList.size()>0">
+			AND a.section_name IN
+			<foreach item="item" index="index" collection="sectionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			</if>
+			<if test="beginFlowMeasureDate != null and endFlowMeasureDate != null and beginFlowMeasureDate != '' and endFlowMeasureDate != ''">
+				AND a.flow_measure_date BETWEEN #{beginFlowMeasureDate} AND #{endFlowMeasureDate}
+			</if>
+		</where>
+		group by a.flow_measure_date 
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.flow_measure_date ,a.section_name DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findAllList" resultType="FlowMeasureType">
+		SELECT 
+			<include refid="flowMeasureTypeColumns"/>
+		FROM flow_measure_type a
+		<include refid="flowMeasureTypeJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+		<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.flow_measure_date,a.section_name DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO flow_measure_type(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			section_name,
+			equivalent_weight,
+			total,
+			up_total,
+			up_passenger_ship,
+			up_cargo_ship,
+			up_container_ship,
+			up_dangerous_ship,
+			up_boat_train,
+			up_fish_boat,
+			up_project_ship,
+			up_public_ship,
+			up_others,
+			down_total,
+			down_passenger_ship,
+			down_cargo_ship,
+			down_container_ship,
+			down_dangerous_ship,
+			down_boat_train,
+			down_fish_boat,
+			down_project_ship,
+			down_public_ship,
+			down_others,
+			flow_measure_date
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{sectionName},
+			#{equivalentWeight},
+			#{total},
+			#{upTotal},
+			#{upPassengerShip},
+			#{upCargoShip},
+			#{upContainerShip},
+			#{upDangerousShip},
+			#{upBoatTrain},
+			#{upFishBoat},
+			#{upProjectShip},
+			#{upPublicShip},
+			#{upOthers},
+			#{downTotal},
+			#{downPassengerShip},
+			#{downCargoShip},
+			#{downContainerShip},
+			#{downDangerousShip},
+			#{downBoatTrain},
+			#{downFishBoat},
+			#{downProjectShip},
+			#{downPublicShip},
+			#{downOthers},
+			#{flowMeasureDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE flow_measure_type SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			section_name = #{sectionName},
+			equivalent_weight = #{equivalentWeight},
+			total = #{total},
+			up_total = #{upTotal},
+			up_passenger_ship = #{upPassengerShip},
+			up_cargo_ship = #{upCargoShip},
+			up_container_ship = #{upContainerShip},
+			up_dangerous_ship = #{upDangerousShip},
+			up_boat_train = #{upBoatTrain},
+			up_fish_boat = #{upFishBoat},
+			up_project_ship = #{upProjectShip},
+			up_public_ship = #{upPublicShip},
+			up_others = #{upOthers},
+			down_total = #{downTotal},
+			down_passenger_ship = #{downPassengerShip},
+			down_cargo_ship = #{downCargoShip},
+			down_container_ship = #{downContainerShip},
+			down_dangerous_ship = #{downDangerousShip},
+			down_boat_train = #{downBoatTrain},
+			down_fish_boat = #{downFishBoat},
+			down_project_ship = #{downProjectShip},
+			down_public_ship = #{downPublicShip},
+			down_others = #{downOthers},
+			flow_measure_date = #{flowMeasureDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE flow_measure_type SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

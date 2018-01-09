@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.penalty.dao.PenaltyBasicInfoDao">
+    
+	<sql id="penaltyBasicInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.reason AS "reason",
+		a.full_reason AS "fullReason",
+		a.violation_regulation AS "violationRegulation",
+		a.punish_basis AS "punishBasis",
+		a.punish_basis_lighten AS "punishBasisLighten",
+		a.punish_basis_heavy AS "punishBasisHeavy",
+		a.illegal_code AS "illegalCode",
+		a.illegal_point AS "illegalPoint",
+		a.illegal_detail AS "illegalDetail",
+		u.name As "createBy.name"
+	</sql>
+	
+	<sql id="penaltyBasicInfoJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+    
+	<select id="get" resultType="PenaltyBasicInfo">
+		SELECT 
+			<include refid="penaltyBasicInfoColumns"/>
+		FROM penalty_basic_info a
+		<include refid="penaltyBasicInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PenaltyBasicInfo">
+		SELECT 
+			<include refid="penaltyBasicInfoColumns"/>
+		FROM penalty_basic_info a
+		<include refid="penaltyBasicInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="reason != null and reason != ''">
+				AND a.reason LIKE 
+					<if test="dbName == 'oracle'">'%'||#{reason}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{reason}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{reason},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PenaltyBasicInfo">
+		SELECT 
+			<include refid="penaltyBasicInfoColumns"/>
+		FROM penalty_basic_info a
+		<include refid="penaltyBasicInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO penalty_basic_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			reason,
+			full_reason,
+			violation_regulation,
+			punish_basis,
+			punish_basis_lighten,
+			punish_basis_heavy,
+			illegal_code,
+			illegal_point,
+			illegal_detail
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{reason},
+			#{fullReason},
+			#{violationRegulation},
+			#{punishBasis},
+			#{punishBasisLighten},
+			#{punishBasisHeavy},
+			#{illegalCode},
+			#{illegalPoint},
+			#{illegalDetail}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE penalty_basic_info SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			reason = #{reason},
+			full_reason = #{fullReason},
+			violation_regulation = #{violationRegulation},
+			punish_basis = #{punishBasis},
+			punish_basis_lighten = #{punishBasisLighten},
+			punish_basis_heavy = #{punishBasisHeavy},
+			illegal_code = #{illegalCode},
+			illegal_point = #{illegalPoint},
+			illegal_detail = #{illegalDetail}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE penalty_basic_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

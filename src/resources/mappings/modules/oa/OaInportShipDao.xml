@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oa.dao.OaInportShipDao">
+    
+	<sql id="oaInportShipColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.grid AS "grid",
+		a.channel AS "channel",
+		a.ship_name AS "shipName",
+		a.ship_location AS "shipLocation",
+		a.ship_type AS "shipType",
+		a.ship_length AS "shipLength",
+		a.departure_port AS "departurePort",
+		a.destination_port AS "destinationPort",
+		a.carry_cargo AS "carryCargo",
+		a.location AS "location",
+		a.work_status AS "workStatus",
+		a.incharge_people AS "inchargePeople",
+		a.telephone AS "telephone",
+		a.construct_status AS "constructStatus",
+		u.name As "createBy.name",
+		c.name As "createBy.office.name"
+	</sql>
+	
+	<sql id="oaInportShipJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+    
+	<select id="get" resultType="OaInportShip">
+		SELECT 
+			<include refid="oaInportShipColumns"/>
+		FROM oa_inport_ship a
+		<include refid="oaInportShipJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="findOneByCurrentUserOffice" resultType="OaInportShip">
+		SELECT 
+			<include refid="oaInportShipColumns"/>
+		FROM oa_inport_ship a
+		<include refid="oaInportShipJoins"/>
+		WHERE c.id = #{currentUser.office.id}
+	</select>
+	<select id="findAllShipNames" resultType="String">
+		SELECT 
+		distinct a.ship_name
+		FROM oa_inport_ship a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<select id="findByShipNames" resultType="OaInportShip">
+		SELECT 
+		<include refid="oaInportShipColumns"/>
+		FROM oa_inport_ship a
+		<include refid="oaInportShipJoins"/>
+		WHERE a.ship_name = #{shipName}
+	</select>
+	<select id="findList" resultType="OaInportShip">
+		SELECT 
+			<include refid="oaInportShipColumns"/>
+		FROM oa_inport_ship a
+		<include refid="oaInportShipJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="createStartDate != null and createStartDate != '' and createEndDate != null and createEndDate != ''">
+				AND DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{createStartDate},'%Y-%m-%d') and DATE_FORMAT(#{createEndDate},'%Y-%m-%d')
+			</if>
+			<if test="shipName != null and shipName != ''">
+				AND a.ship_name LIKE concat('%',#{shipName},'%')
+			</if>
+			<if test="departurePort != null and departurePort != ''">
+				AND a.departure_port LIKE concat('%',#{departurePort},'%')
+			</if>
+			<if test="destinationPort != null and destinationPort != ''">
+				AND a.destination_port LIKE concat('%',#{destinationPort},'%')
+			</if>
+			<if test="location != null and location != ''">
+				AND a.location LIKE concat('%',#{location},'%')
+			</if>
+			<if test="carryCargo != null and carryCargo != ''">
+				AND a.carry_cargo LIKE concat('%',#{carryCargo},'%')
+			</if>
+			<if test="workStatus != null and workStatus != ''">
+				AND a.work_status LIKE concat('%',#{workStatus},'%')
+			</if>
+			<if test="shipLocation != null and shipLocation != ''">
+				AND a.ship_location LIKE concat('%',#{shipLocation},'%')
+			</if>
+			<if test="shipType != null and shipType != ''">
+				AND a.ship_type LIKE concat('%',#{shipType},'%')
+			</if>
+			<if test="grid != null and grid != ''">
+				AND a.grid LIKE concat('%',#{grid},'%')
+			</if>
+			<if test="channel != null and channel != ''">
+				AND a.channel LIKE concat('%',#{channel},'%')
+			</if>
+			<if test="officeId != null and officeId != ''">
+				AND c.id = #{officeId} 
+			</if>
+		</where>
+						${sqlMap.dsf}
+		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findListByUserAndDate" resultType="OaInportShip">
+		SELECT 
+			<include refid="oaInportShipColumns"/>
+		FROM oa_inport_ship a
+		<include refid="oaInportShipJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="createDate != null and createDate != ''">
+				AND DATE_FORMAT(a.create_date,'%Y-%m-%d') = DATE_FORMAT(#{createDate},'%Y-%m-%d') 
+			</if>
+			
+			ORDER BY c.id DESC
+		</where>
+		
+	</select>
+	<select id="getTodayStatics" resultType="java.util.Map">
+		select distinct f.`name` as cname from oa_inport_ship o 
+			left join sys_user u on o.create_by=u.id 
+			left join sys_office f on u.office_id = f.id
+			where o.del_flag = 0 AND DATE_FORMAT(o.create_date,'%Y-%m-%d')=DATE_FORMAT(#{0},'%Y-%m-%d')
+	</select>
+	<select id="getInportShipStatics" resultType="java.util.Map">
+		select a.ship_location as cjg,count(*) as counter from oa_inport_ship a where a.del_flag=0 and a.create_date > DATE_FORMAT('2017-4-1','%Y-%m-%d') group by a.ship_location order by counter desc
+	</select>
+	
+	<select id="findAllList" resultType="OaInportShip">
+		SELECT 
+			<include refid="oaInportShipColumns"/>
+		FROM oa_inport_ship a
+		<include refid="oaInportShipJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_inport_ship(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			grid,
+			channel,
+			ship_name,
+			ship_location,
+			ship_type,
+			ship_length,
+			departure_port,
+			destination_port,
+			carry_cargo,
+			location,
+			work_status,
+			incharge_people,
+			telephone,
+			construct_status
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{grid},
+			#{channel},
+			#{shipName},
+			#{shipLocation},
+			#{shipType},
+			#{shipLength},
+			#{departurePort},
+			#{destinationPort},
+			#{carryCargo},
+			#{location},
+			#{workStatus},
+			#{inchargePeople},
+			#{telephone},
+			#{constructStatus}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_inport_ship SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			grid = #{grid},
+			channel = #{channel},
+			ship_name = #{shipName},
+			ship_location = #{shipLocation},
+			ship_type = #{shipType},
+			ship_length = #{shipLength},
+			departure_port = #{departurePort},
+			destination_port = #{destinationPort},
+			carry_cargo = #{carryCargo},
+			location = #{location},
+			work_status = #{workStatus},
+			incharge_people = #{inchargePeople},
+			telephone = #{telephone},
+			construct_status = #{constructStatus}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE oa_inport_ship SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteToday">
+		UPDATE oa_inport_ship a 
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id 
+		SET 
+			a.del_flag = #{DEL_FLAG_DELETE}
+		WHERE DATE_FORMAT(a.create_date,'%Y-%m-%d') = DATE_FORMAT(#{createDate},'%Y-%m-%d') 
+		<if test="createBy != null and createBy != '' ">
+					AND  c.id = #{createBy.office.id} 
+		</if>
+	</update>
+</mapper>

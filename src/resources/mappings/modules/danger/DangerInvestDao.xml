@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.danger.dao.DangerInvestDao">
+    
+	<sql id="dangerInvestColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.danger_name AS "dangerName",
+		a.danger_classify AS "dangerClassify",
+		a.against_law AS "againstLaw",
+		a.consequences AS "consequences",
+		a.danger_company AS "dangerCompany",
+		a.find_office AS "findOffice.id",
+		a.find_time AS "findTime",
+		a.danger_detail AS "dangerDetail",
+		a.danger_difficulty AS "dangerDifficulty",
+		a.deal_way AS "dealWay",
+		a.is_transmit AS "isTransmit",
+		a.notice_time AS "noticeTime",
+		a.notice_no AS "noticeNo",
+		a.enforce_measure AS "enforceMeasure",
+		a.rectify_time AS "rectifyTime",
+		a.rectify_require AS "rectifyRequire",
+		a.is_complete AS "isComplete",
+		a.complete_date AS "completeDate",
+		a.next_way AS "nextWay",
+		c.name AS "findOffice.name",
+		a.recify_type AS "dangerRecify",
+		a.danger_type AS "dangerType",
+		a.is_confirm AS "isConfirm"
+	</sql>
+	
+	<sql id="dangerInvestJoins">
+		JOIN sys_office c ON c.id = a.find_office
+		JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="DangerInvest">
+		SELECT 
+			<include refid="dangerInvestColumns"/>
+		FROM danger_invest a
+		<include refid="dangerInvestJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DangerInvest">
+		SELECT 
+			<include refid="dangerInvestColumns"/>
+		FROM danger_invest a
+		<include refid="dangerInvestJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dangerName != null and dangerName != ''">
+				AND a.danger_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{dangerName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{dangerName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{dangerName},'%')</if>
+			</if>
+			<if test="dangerClassify != null and dangerClassify != ''">
+				AND a.danger_classify = #{dangerClassify}
+			</if>
+			<if test="beginFindTime != null and endFindTime != null and beginFindTime != '' and endFindTime != ''">
+				AND a.find_time BETWEEN #{beginFindTime} AND #{endFindTime}
+			</if>
+			<if test="isTransmit != null and isTransmit != ''">
+				AND a.is_transmit = #{isTransmit}
+			</if>
+			<if test="isComplete != null and isComplete != ''">
+				AND a.is_complete = #{isComplete}
+			</if>
+		</where>
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DangerInvest">
+		SELECT 
+			<include refid="dangerInvestColumns"/>
+		FROM danger_invest a
+		<include refid="dangerInvestJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO danger_invest(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			danger_name,
+			danger_classify,
+			against_law,
+			consequences,
+			danger_company,
+			find_office,
+			find_time,
+			danger_detail,
+			danger_difficulty,
+			deal_way,
+			is_transmit,
+			notice_time,
+			notice_no,
+			enforce_measure,
+			rectify_time,
+			rectify_require,
+			next_way,
+			is_complete,
+			complete_date,
+			danger_type,
+			recify_type,
+			is_confirm
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{dangerName},
+			#{dangerClassify},
+			#{againstLaw},
+			#{consequences},
+			#{dangerCompany},
+			#{findOffice.id},
+			#{findTime},
+			#{dangerDetail},
+			#{dangerDifficulty},
+			#{dealWay},
+			#{isTransmit},
+			#{noticeTime},
+			#{noticeNo},
+			#{enforceMeasure},
+			#{rectifyTime},
+			#{rectifyRequire},
+			#{nextWay},
+			#{isComplete},
+			#{completeDate},
+			#{dangerType},
+			#{dangerRecify},
+			#{isConfirm}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE danger_invest SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			danger_name = #{dangerName},
+			danger_classify = #{dangerClassify},
+			against_law = #{againstLaw},
+			consequences = #{consequences},
+			danger_company = #{dangerCompany},
+			find_office = #{findOffice.id},
+			find_time = #{findTime},
+			danger_detail = #{dangerDetail},
+			danger_difficulty = #{dangerDifficulty},
+			deal_way = #{dealWay},
+			is_transmit = #{isTransmit},
+			notice_time = #{noticeTime},
+			notice_no = #{noticeNo},
+			enforce_measure = #{enforceMeasure},
+			rectify_time = #{rectifyTime},
+			rectify_require = #{rectifyRequire},
+			next_way = #{nextWay},
+			is_complete = #{isComplete},
+			complete_date = #{completeDate},
+			danger_type = #{dangerType},
+			recify_type = #{dangerRecify},
+			is_confirm = #{isConfirm}
+		WHERE id = #{id}
+	</update>
+	<update id="confirm">
+		UPDATE danger_invest SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			is_confirm = #{isConfirm}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE danger_invest SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.penalty.dao.PenaltyRuleDictDao">
+    
+	<sql id="penaltyRuleDictColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.cause AS "cause",
+		a.summary_cause AS "summaryCause",
+		a.clause AS "clause"
+	</sql>
+	
+	<sql id="penaltyRuleDictJoins">
+	</sql>
+    
+	<select id="get" resultType="PenaltyRuleDict">
+		SELECT 
+			<include refid="penaltyRuleDictColumns"/>
+		FROM penalty_rule_dict a
+		<include refid="penaltyRuleDictJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PenaltyRuleDict">
+		SELECT 
+			<include refid="penaltyRuleDictColumns"/>
+		FROM penalty_rule_dict a
+		<include refid="penaltyRuleDictJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="cause != null and cause != ''">
+				AND a.cause LIKE 
+					<if test="dbName == 'oracle'">'%'||#{cause}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{cause}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{cause},'%')</if>
+			</if>
+			<if test="summaryCause != null and summaryCause != ''">
+				AND a.summary_cause LIKE 
+					<if test="dbName == 'oracle'">'%'||#{summaryCause}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{summaryCause}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{summaryCause},'%')</if>
+			</if>
+			<if test="clause != null and clause != ''">
+				AND a.clause LIKE 
+					<if test="dbName == 'oracle'">'%'||#{clause}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{clause}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{clause},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PenaltyRuleDict">
+		SELECT 
+			<include refid="penaltyRuleDictColumns"/>
+		FROM penalty_rule_dict a
+		<include refid="penaltyRuleDictJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO penalty_rule_dict(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			cause,
+			summary_cause,
+			clause
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{cause},
+			#{summaryCause},
+			#{clause}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE penalty_rule_dict SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			cause = #{cause},
+			summary_cause = #{summaryCause},
+			clause = #{clause}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE penalty_rule_dict SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

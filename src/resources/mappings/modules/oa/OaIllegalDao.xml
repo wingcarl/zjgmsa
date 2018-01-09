@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oa.dao.OaIllegalDao">
+    
+	<sql id="oaIllegalColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.happen_location AS "happenLocation",
+		a.illegal_detail AS "illegalDetail",
+		a.ship_name AS "shipName",
+		a.happen_date AS "happenDate",
+		a.deal_way AS "dealWay",
+		a.illegal_type  AS "illegal_type",
+		a.beizhu As "beizhu",
+		a.oa_cruisedata_id As "oaCruisedataId"
+	</sql>
+	
+	<sql id="oaIllegalJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+    
+	<select id="get" resultType="OaIllegal">
+		SELECT 
+			<include refid="oaIllegalColumns"/>
+		FROM oa_illegal a
+		<include refid="oaIllegalJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="findByOaCruisedata" resultType="OaIllegal">
+		SELECT 
+			a.ship_name,a.happen_date,a.illegal_detail,a.happen_location,a.deal_way
+		FROM oa_illegal a
+		WHERE a.oa_cruisedata_id = #{oaCruisedataId}
+	</select>
+	<select id="getIllegalCount" resultType="java.util.Map">
+		select 
+			u.`name` as "cname",count(*) as "counter"
+				from oa_illegal o left join sys_user u 
+					on o.create_by=u.id 
+				<where>
+					o.del_flag = #{DEL_FLAG_NORMAL}
+				
+					<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+						AND DATE_FORMAT(o.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+					</if>
+				</where>	
+				group by o.create_by
+			
+	</select>
+	
+	<select id="findList" resultType="OaIllegal">
+		SELECT 
+			<include refid="oaIllegalColumns"/>
+		FROM oa_illegal a
+		<include refid="oaIllegalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="shipName != null and shipName != ''">
+				AND a.ship_name = #{shipName}
+			</if>
+			<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+				AND DATE_FORMAT(a.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+			</if>
+		</where>
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findList1" resultType="OaIllegal">
+		SELECT 
+			<include refid="oaIllegalColumns"/>
+		FROM oa_illegal a
+		<include refid="oaIllegalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="shipName != null and shipName != ''">
+				AND a.ship_name = #{shipName}
+			</if>
+			<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+				AND DATE_FORMAT(a.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+			</if>
+		</where>
+		${sqlMap.dsf}
+		
+	</select>
+	<select id="findAllList" resultType="OaIllegal">
+		SELECT 
+			<include refid="oaIllegalColumns"/>
+		FROM oa_illegal a
+		<include refid="oaIllegalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_illegal(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			happen_location,
+			illegal_detail,
+			ship_name,
+			happen_date,
+			deal_way,
+			illegal_type,
+			beizhu,
+			oa_cruisedata_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{happenLocation},
+			#{illegalDetail},
+			#{shipName},
+			#{happenDate},
+			#{dealWay},
+			#{illegalType},
+			#{beizhu},
+			#{oaCruisedataId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_illegal SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			happen_location = #{happenLocation},
+			illegal_detail = #{illegalDetail},
+			ship_name = #{shipName},
+			happen_date = #{happenDate},
+			deal_way = #{dealWay}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE oa_illegal SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

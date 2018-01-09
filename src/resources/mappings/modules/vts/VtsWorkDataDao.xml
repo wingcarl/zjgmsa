@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.vts.dao.VtsWorkDataDao">
+    
+	<sql id="vtsWorkDataColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.inport_limit_ship AS "inportLimitShip",
+		a.transit_limit_ship AS "transitLimitShip",
+		a.position_report AS "positionReport",
+		a.important_ship AS "importantShip",
+		a.to_do_list AS "toDoList",
+		a.done_list AS "doneList",
+		a.ship_follow AS "shipFollow",
+		a.giant_ship AS "giantShip",
+		a.four_passenger AS "fourPassenger",
+		a.information_service AS "informationService",
+		a.traffic_operation AS "trafficOperation",
+		a.navaid AS "navaid",
+		a.avoid_danger AS "avoidDanger",
+		a.enforce_union AS "enforceUnion",
+		a.mooring_spying AS "mooringSpying",
+		a.illegal AS "illegal",
+		u.name AS "createBy.name"
+	
+	</sql>
+	
+	<sql id="vtsWorkDataJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+    
+	<select id="get" resultType="VtsWorkData">
+		SELECT 
+			<include refid="vtsWorkDataColumns"/>
+		FROM vts_work_data a
+		<include refid="vtsWorkDataJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="VtsWorkData">
+		SELECT 
+			<include refid="vtsWorkDataColumns"/>
+		FROM vts_work_data a
+		<include refid="vtsWorkDataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				And  DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginCreateDate},'%Y-%m-%d') AND DATE_FORMAT(#{endCreateDate},'%Y-%m-%d')
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="getSumData" resultType="VtsWorkData">
+		SELECT 
+			u.name AS "createBy.name",
+			sum(a.inport_limit_ship) AS "inportLimitShip",
+			sum(a.transit_limit_ship) AS "transitLimitShip",
+			sum(a.position_report) AS "positionReport",
+			sum(a.important_ship) AS "importantShip",
+			sum(a.ship_follow) AS shipFollow,
+			sum(a.giant_ship) AS giantShip,
+			sum(a.four_passenger) AS fourPassenger,
+			sum(a.information_service) AS informationService,
+			sum(a.traffic_operation) AS trafficOperation,
+			sum(a.navaid) AS navaid,
+			sum(a.avoid_danger) AS avoidDanger,
+			sum(a.enforce_union) AS enforceUnion,
+			sum(a.mooring_spying) AS mooringSpying,
+			sum(a.illegal) AS illegal
+		FROM vts_work_data a
+	    <include refid="vtsWorkDataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				And  DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginCreateDate},'%Y-%m-%d') AND DATE_FORMAT(#{endCreateDate},'%Y-%m-%d')
+			</if>
+		</where>
+		group by u.name
+	</select>
+	<select id="findAllList" resultType="VtsWorkData">
+		SELECT 
+			<include refid="vtsWorkDataColumns"/>
+		FROM vts_work_data a
+		<include refid="vtsWorkDataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO vts_work_data(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			inport_limit_ship,
+			transit_limit_ship,
+			position_report,
+			important_ship,
+			ship_follow,
+			giant_ship,
+			four_passenger,
+			information_service,
+			traffic_operation,
+			navaid,
+			avoid_danger,
+			enforce_union,
+			mooring_spying,
+			illegal,
+			to_do_list
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{inportLimitShip},
+			#{transitLimitShip},
+			#{positionReport},
+			#{importantShip},
+			#{shipFollow},
+			#{giantShip},
+			#{fourPassenger},
+			#{informationService},
+			#{trafficOperation},
+			#{navaid},
+			#{avoidDanger},
+			#{enforceUnion},
+			#{mooringSpying},
+			#{illegal},
+			#{toDoList}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE vts_work_data SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			inport_limit_ship = #{inportLimitShip},
+			transit_limit_ship = #{transitLimitShip},
+			position_report = #{positionReport},
+			important_ship = #{importantShip},
+			ship_follow = #{shipFollow},
+			giant_ship = #{giantShip},
+			four_passenger = #{fourPassenger},
+			information_service = #{informationService},
+			traffic_operation = #{trafficOperation},
+			navaid = #{navaid},
+			avoid_danger = #{avoidDanger},
+			enforce_union = #{enforceUnion},
+			mooring_spying = #{mooringSpying},
+			illegal = #{illegal},
+			to_do_list = #{toDoList}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE vts_work_data SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

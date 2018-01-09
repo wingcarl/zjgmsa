@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.setting.dao.WeixinMenuentityDao">
+    
+	<sql id="weixinMenuentityColumns">
+		a.id AS "id",
+		a.menukey AS "menukey",
+		a.msgtype AS "msgtype",
+		a.name AS "name",
+		a.orders AS "orders",
+		a.templateid AS "templateid",
+		a.type AS "type",
+		a.url AS "url",
+		a.fatherid AS "fatherid",
+		a.accountid AS "accountid",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="weixinMenuentityJoins">
+	</sql>
+    
+	<select id="get" resultType="WeixinMenuentity">
+		SELECT 
+			<include refid="weixinMenuentityColumns"/>
+		FROM weixin_menuentity a
+		<include refid="weixinMenuentityJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WeixinMenuentity">
+		SELECT 
+			<include refid="weixinMenuentityColumns"/>
+		FROM weixin_menuentity a
+		<include refid="weixinMenuentityJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WeixinMenuentity">
+		SELECT 
+			<include refid="weixinMenuentityColumns"/>
+		FROM weixin_menuentity a
+		<include refid="weixinMenuentityJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO weixin_menuentity(
+			id,
+			menukey,
+			msgtype,
+			name,
+			orders,
+			templateid,
+			type,
+			url,
+			fatherid,
+			accountid,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{menukey},
+			#{msgtype},
+			#{name},
+			#{orders},
+			#{templateid},
+			#{type},
+			#{url},
+			#{fatherid},
+			#{accountid},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE weixin_menuentity SET 	
+			menukey = #{menukey},
+			msgtype = #{msgtype},
+			name = #{name},
+			orders = #{orders},
+			templateid = #{templateid},
+			type = #{type},
+			url = #{url},
+			fatherid = #{fatherid},
+			accountid = #{accountid},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE weixin_menuentity SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getMenuByKey" resultType="WeixinMenuentity">
+		SELECT 
+			<include refid="weixinMenuentityColumns"/>
+		FROM weixin_menuentity a
+		<include refid="weixinMenuentityJoins"/>
+		WHERE a.menukey = #{menukey} and a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+</mapper>

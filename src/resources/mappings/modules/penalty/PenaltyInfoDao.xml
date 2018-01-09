@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.penalty.dao.PenaltyInfoDao">
+    
+	<sql id="penaltyInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.ship_name AS "shipName",
+		a.ship_port AS "shipPort",
+		a.ship_type AS "shipType",
+		a.ship_load AS "shipLoad",
+		a.ship_power AS "shipPower",
+		a.ship_length AS "shipLength",
+		a.ship_regist AS "shipRegist",
+		a.ship_owner AS "shipOwner",
+		a.ship_transactor AS "shipTransactor",
+		a.ship_owner_loc AS "shipOwnerLoc",
+		a.ship_transactor_loc AS "shipTransactorLoc",
+		a.departure_port AS "departurePort",
+		a.destination_port AS "destinationPort",
+		a.illegal_happen_date AS "illegalHappenDate",
+		a.illegal_happen_loc AS "illegalHappenLoc",
+		a.dealer_name AS "dealerName",
+		a.idcard_num AS "idcardNum",
+		a.contact_address AS "contactAddress",
+		a.contact_telephone AS "contactTelephone",
+		a.officer_1 AS "officer1",
+		a.officer_2 AS "officer2",
+		a.file_create_date AS "fileCreateDate",
+		a.file_num AS "fileNum",
+		a.penalty_severity AS "penaltySeverity",
+		a.penalty_reason AS "penaltyReason",
+		a.penalty_money AS "penaltyMoney",
+		a.full_reason AS "fullReason",
+		a.violation_regulation AS "violationRegulation",
+		a.punish_basis AS "punishBasis",
+		a.retrograde_way AS "retrogradeWay",
+		a.retro_begin_pos AS "retroBeginPos",
+		a.retro_end_pos AS "retroEndPos",
+		a.real_freeboard AS "realFreeboard",
+		a.a_freeboard AS "aFreeboard",
+		a.illegal_code AS "illegalCode",
+		a.illegal_point AS "illegalPoint",
+		a.ship_area AS "shipArea"
+	</sql>
+	
+	<sql id="penaltyInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="PenaltyInfo">
+		SELECT 
+			<include refid="penaltyInfoColumns"/>
+		FROM penalty_info a
+		<include refid="penaltyInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PenaltyInfo">
+		SELECT 
+			<include refid="penaltyInfoColumns"/>
+		FROM penalty_info a
+		<include refid="penaltyInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.create_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PenaltyInfo">
+		SELECT 
+			<include refid="penaltyInfoColumns"/>
+		FROM penalty_info a
+		<include refid="penaltyInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO penalty_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			ship_name,
+			ship_port,
+			ship_type,
+			ship_load,
+			ship_power,
+			ship_length,
+			ship_regist,
+			ship_owner,
+			ship_transactor,
+			ship_owner_loc,
+			ship_transactor_loc,
+			departure_port,
+			destination_port,
+			illegal_happen_date,
+			illegal_happen_loc,
+			dealer_name,
+			idcard_num,
+			contact_address,
+			contact_telephone,
+			officer_1,
+			officer_2,
+			file_create_date,
+			file_num,
+			penalty_severity,
+			penalty_reason,
+			penalty_money,
+			full_reason,
+			violation_regulation,
+			punish_basis,
+			retrograde_way,
+			retro_begin_pos,
+			retro_end_pos,
+			real_freeboard,
+			a_freeboard,
+			illegal_code,
+			illegal_point,
+			ship_area
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{shipName},
+			#{shipPort},
+			#{shipType},
+			#{shipLoad},
+			#{shipPower},
+			#{shipLength},
+			#{shipRegist},
+			#{shipOwner},
+			#{shipTransactor},
+			#{shipOwnerLoc},
+			#{shipTransactorLoc},
+			#{departurePort},
+			#{destinationPort},
+			#{illegalHappenDate},
+			#{illegalHappenLoc},
+			#{dealerName},
+			#{idcardNum},
+			#{contactAddress},
+			#{contactTelephone},
+			#{officer1},
+			#{officer2},
+			#{fileCreateDate},
+			#{fileNum},
+			#{penaltySeverity},
+			#{penaltyReason},
+			#{penaltyMoney},
+			#{fullReason},
+			#{violationRegulation},
+			#{punishBasis},
+			#{retrogradeWay},
+			#{retroBeginPos},
+			#{retroEndPos},
+			#{realFreeboard},
+			#{aFreeboard},
+			#{illegalCode},
+			#{illegalPoint},
+			#{shipArea}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE penalty_info SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			ship_name = #{shipName},
+			ship_port = #{shipPort},
+			ship_type = #{shipType},
+			ship_load = #{shipLoad},
+			ship_power = #{shipPower},
+			ship_length = #{shipLength},
+			ship_regist = #{shipRegist},
+			ship_owner = #{shipOwner},
+			ship_transactor = #{shipTransactor},
+			ship_owner_loc = #{shipOwnerLoc},
+			ship_transactor_loc = #{shipTransactorLoc},
+			departure_port = #{departurePort},
+			destination_port = #{destinationPort},
+			illegal_happen_date = #{illegalHappenDate},
+			illegal_happen_loc = #{illegalHappenLoc},
+			dealer_name = #{dealerName},
+			idcard_num = #{idcardNum},
+			contact_address = #{contactAddress},
+			contact_telephone = #{contactTelephone},
+			officer_1 = #{officer1},
+			officer_2 = #{officer2},
+			file_create_date = #{fileCreateDate},
+			file_num = #{fileNum},
+			penalty_severity = #{penaltySeverity},
+			penalty_reason = #{penaltyReason},
+			penalty_money = #{penaltyMoney},
+			full_reason = #{fullReason},
+			violation_regulation = #{violationRegulation},
+			punish_basis = #{punishBasis},
+			retrograde_way = #{retrogradeWay},
+			retro_begin_pos = #{retroBeginPos},
+			retro_end_pos = #{retroEndPos},
+			real_freeboard = #{realFreeboard},
+			a_freeboard = #{aFreeboard},
+			illegal_code = #{illegalCode},
+			illegal_point = #{illegalPoint},
+			ship_area = #{shipArea}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE penalty_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

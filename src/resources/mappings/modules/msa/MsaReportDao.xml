@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.msa.dao.MsaReportDao">
+    
+	<sql id="msaReportColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.title AS "title",
+		a.author AS "author",
+		a.url AS "url",
+		a.reading_num AS "readingNum",
+		a.depid AS "depid.id",
+		o12.`name` As "depid.name",
+		a.public_date AS "publicDate",
+		a.type As "type"
+	</sql>
+	
+	<sql id="msaReportJoins">
+		LEFT JOIN sys_office o12 ON o12.id = a.depid
+	</sql>
+    
+	<select id="get" resultType="MsaReport">
+		SELECT 
+			<include refid="msaReportColumns"/>
+		FROM msa_report a
+		<include refid="msaReportJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="MsaReport">
+		SELECT 
+			<include refid="msaReportColumns"/>
+		FROM msa_report a
+		<include refid="msaReportJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="title != null and title != ''">
+				AND a.title LIKE 
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{title}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{title},'%')</if>
+			</if>
+			<if test="author != null and author != ''">
+				AND a.author LIKE 
+					<if test="dbName == 'oracle'">'%'||#{author}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{author}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{author},'%')</if>
+			</if>
+			<if test="depid!=null and depid.id != null and depid.id != ''">
+				AND a.depid = #{depid.id}
+			</if>
+			<if test="beginPublicDate != null and endPublicDate != null and beginPublicDate != '' and endPublicDate != ''">
+				AND a.public_date BETWEEN #{beginPublicDate} AND #{endPublicDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.public_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MsaReport">
+		SELECT 
+			<include refid="msaReportColumns"/>
+		FROM msa_report a
+		<include refid="msaReportJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO msa_report(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			title,
+			author,
+			url,
+			reading_num,
+			depid,
+			public_date,
+			type
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{title},
+			#{author},
+			#{url},
+			#{readingNum},
+			#{depid.id},
+			#{publicDate},
+			#{type}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE msa_report SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			title = #{title},
+			author = #{author},
+			url = #{url},
+			reading_num = #{readingNum},
+			depid = #{depid.id},
+			public_date = #{publicDate},
+			type = #{type}
+		WHERE id = #{id}
+	</update>
+	<update id="updateByTitle">
+		UPDATE msa_report SET 	
+			type = #{1}
+		WHERE title LIKE concat('%',#{0},'%')
+	</update>
+	
+	<update id="delete">
+		UPDATE msa_report SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

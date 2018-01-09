@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.penalty.dao.PenaltyRegistDao">
+    
+	<sql id="penaltyRegistColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.ship_name AS "shipName",
+		a.illegal_detail AS "illegalDetail",
+		a.officer AS "officer",
+		a.find_date AS "findDate",
+		a.certificate_get_detail AS "certificateGetDetail",
+		a.telephone AS "telephone",
+		a.find_loc As "findLoc"
+	</sql>
+	
+	<sql id="penaltyRegistJoins">
+	</sql>
+    
+	<select id="get" resultType="PenaltyRegist">
+		SELECT 
+			<include refid="penaltyRegistColumns"/>
+		FROM penalty_regist a
+		<include refid="penaltyRegistJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="PenaltyRegist">
+		SELECT 
+			<include refid="penaltyRegistColumns"/>
+		FROM penalty_regist a
+		<include refid="penaltyRegistJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginFindDate != null and endFindDate != null and beginFindDate != '' and endFindDate != ''">
+				AND a.find_date BETWEEN #{beginFindDate} AND #{endFindDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="PenaltyRegist">
+		SELECT 
+			<include refid="penaltyRegistColumns"/>
+		FROM penalty_regist a
+		<include refid="penaltyRegistJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO penalty_regist(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			ship_name,
+			illegal_detail,
+			officer,
+			find_date,
+			certificate_get_detail,
+			telephone,
+			find_loc
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{shipName},
+			#{illegalDetail},
+			#{officer},
+			#{findDate},
+			#{certificateGetDetail},
+			#{telephone},
+			#{findLoc}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE penalty_regist SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			ship_name = #{shipName},
+			illegal_detail = #{illegalDetail},
+			officer = #{officer},
+			find_date = #{findDate},
+			certificate_get_detail = #{certificateGetDetail},
+			telephone = #{telephone},
+			find_loc = #{findLoc}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE penalty_regist SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cruise.dao.CruiseStopPlanDao">
+    
+	<sql id="cruiseStopPlanColumns">
+		a.id AS "id",
+		u.name AS "createBy.name",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.stop_date AS "stopDate",
+		a.office_id AS "office.id",
+		o9.name AS "office.name",
+		o9.parent_id As "parentOffice.id"
+	</sql>
+	
+	<sql id="cruiseStopPlanJoins">
+		LEFT JOIN sys_office o9 ON o9.id = a.office_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="CruiseStopPlan">
+		SELECT 
+			<include refid="cruiseStopPlanColumns"/>
+		FROM cruise_stop_plan a
+		<include refid="cruiseStopPlanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="findByDate" resultType="CruiseStopPlan">
+		SELECT 
+			<include refid="cruiseStopPlanColumns"/>
+		FROM cruise_stop_plan a
+		<include refid="cruiseStopPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginStopDate != null and endStopDate != null and beginStopDate != '' and endStopDate != ''">
+				AND a.stop_date BETWEEN #{beginStopDate} AND #{endStopDate}
+			</if>
+			
+		</where>
+		
+	</select>
+	<select id="findList" resultType="CruiseStopPlan">
+		SELECT 
+			<include refid="cruiseStopPlanColumns"/>
+		FROM cruise_stop_plan a
+		<include refid="cruiseStopPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginStopDate != null and endStopDate != null and beginStopDate != '' and endStopDate != ''">
+				AND a.stop_date BETWEEN #{beginStopDate} AND #{endStopDate}
+			</if>
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CruiseStopPlan">
+		SELECT 
+			<include refid="cruiseStopPlanColumns"/>
+		FROM cruise_stop_plan a
+		<include refid="cruiseStopPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cruise_stop_plan(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			stop_date,
+			office_id
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{stopDate},
+			#{office.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cruise_stop_plan SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			stop_date = #{stopDate},
+			office_id = #{office.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cruise_stop_plan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
