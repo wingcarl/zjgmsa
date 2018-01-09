@@ -84,7 +84,57 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
+	<select id="findDataByMonth" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		SELECT 
+			date_format(a.find_time,'%Y-%m') as "name",
+			count(*) as "totalTime"
+		FROM danger_invest a left join danger_invest_detail d  on d.danger_invest=a.id 
+		<where>
+			a.del_flag = 0
+			
+			<if test="beginTime != null and endTime != null and beginTime != '' and endTime != ''">
+				AND a.find_time BETWEEN #{beginTime} AND #{endTime}
+			</if>
+			
+		</where>
+		group by date_format(a.find_time,'%Y-%m')
+	</select>
+	<select id="findDataByType" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select 
+			dict.label as "name",count(*) As "totalTime",count(*) as counter
+			from danger_invest invest 
+			left join sys_dict dict on invest.danger_type=dict.`value`  
+			left join danger_invest_detail detail on detail.danger_invest=invest.id 
+		<where>
+			dict.type='danger_type' and invest.del_flag=0 
+			
+			<if test="beginTime != null and endTime != null and beginTime != '' and endTime != ''">
+				AND invest.find_time BETWEEN #{beginTime} AND #{endTime}
+			</if>
+			
+		</where>
+				group by dict.label order by counter desc 
+
+	</select>
+	<select id="findDataByRecify" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select 
+			dict.label as "name",count(*) As "totalTime",count(*) as counter
+			from danger_invest invest 
+			left join sys_dict dict on invest.recify_type=dict.`value`  
+			left join danger_invest_detail detail on detail.danger_invest=invest.id 
+		<where>
+			dict.type='danger_recify' and invest.del_flag=0 
+			
+			<if test="beginTime != null and endTime != null and beginTime != '' and endTime != ''">
+				AND invest.find_time BETWEEN #{beginTime} AND #{endTime}
+			</if>
+			
+		</where>
+				group by dict.label order by counter desc 
+
+	</select>
+
 	<select id="findAllList" resultType="DangerInvest">
 		SELECT 
 			<include refid="dangerInvestColumns"/>

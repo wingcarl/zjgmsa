@@ -131,7 +131,9 @@
 			<li><label>年份：</label>
 				<form:select id="year" path="year" class="input-medium">
 					<form:option value="2017" label="2017"/>
+
 					<form:option value="2018" label="2018"/>
+
 				</form:select>			
 			</li>
 			<li><label>季度：</label>

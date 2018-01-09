@@ -23,6 +23,7 @@ public class ZJGMSAUtils {
 		}
 		return infoList1;
 	}
+
 	public static List<String> getJiCeng(){
 		List<String> jiceng = new ArrayList<String>();
 		jiceng.add(GANGQUCHU);
@@ -33,6 +34,7 @@ public class ZJGMSAUtils {
 		jiceng.add(NANFENCHU);
 		return jiceng;
 	}
+
 	public static final String ZHIDUI = "海巡执法支队";
 	public static final String GANGQUCHU = "港区海事处";
 	

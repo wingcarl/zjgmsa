@@ -53,7 +53,80 @@
 				group by o.create_by
 			
 	</select>
-	
+
+	<select id="getIllegalSum" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select 
+			office.`name` as "name",count(*) as "totalTime",
+			count(*) as counter
+				from oa_illegal o left join sys_user u 
+					on o.create_by=u.id left join sys_office office 
+						on office.id = u.office_id
+				<where>
+					o.del_flag = #{DEL_FLAG_NORMAL}
+				
+					<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+						AND DATE_FORMAT(o.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+					</if>
+				</where>	
+				group by office.id
+				order by counter desc
+	</select>
+	<select id="getIllegalCountByMonth" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select 
+			DATE_FORMAT(o.happen_date,'%Y-%m') as "name",count(*) as "totalTime" 
+				from oa_illegal o left join sys_user u 
+					on o.create_by=u.id 
+				<where>
+					o.del_flag = #{DEL_FLAG_NORMAL}
+				
+					<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+						AND DATE_FORMAT(o.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+					</if>
+				</where>	
+				group by DATE_FORMAT(o.happen_date,'%Y-%m')
+				order by DATE_FORMAT(o.happen_date,'%Y-%m') asc
+	</select>
+	<select id="getIllegalByType" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select d.label as "name",count(*) as "totalTime",count(*) as counter from oa_illegal i 
+		left join sys_dict d on i.illegal_detail=d.`value` 
+		
+				<where>
+					i.del_flag = #{DEL_FLAG_NORMAL} 
+				   AND d.type='illegal_detail' 
+					<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+						AND DATE_FORMAT(i.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+					</if>
+				</where>	
+				group by i.illegal_detail 
+				order by counter desc
+	</select>
+	<select id="getIllegalByResult" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select d.label as "name",count(*) as "totalTime",count(*) as counter from oa_illegal i 
+		left join sys_dict d on i.deal_way=d.`value` 
+		
+				<where>
+					i.del_flag = #{DEL_FLAG_NORMAL} 
+				   AND d.type='deal_way' 
+					<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+						AND DATE_FORMAT(i.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+					</if>
+				</where>	
+				group by i.deal_way 
+				order by counter desc
+	</select>
+	<select id="getIllegalByLocation" resultType="com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat">
+		select i.happen_location as "name",count(*) as "totalTime",count(*) as counter from oa_illegal i 
+				<where>
+					i.del_flag = #{DEL_FLAG_NORMAL} 
+				   
+					<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+						AND DATE_FORMAT(i.happen_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+					</if>
+				</where>	
+				group by i.happen_location 
+				order by counter desc
+	</select>
+
 	<select id="findList" resultType="OaIllegal">
 		SELECT 
 			<include refid="oaIllegalColumns"/>

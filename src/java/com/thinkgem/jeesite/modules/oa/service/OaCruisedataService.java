@@ -40,8 +40,10 @@ import com.thinkgem.jeesite.modules.oa.entity.OaExportDaily;
 import com.thinkgem.jeesite.modules.oa.entity.OaReport;
 import com.thinkgem.jeesite.modules.oa.entity.OaTime;
 import com.thinkgem.jeesite.modules.oa.entity.PortData;
+
 import com.thinkgem.jeesite.modules.schedule.entity.ScheduleDetail;
 import com.thinkgem.jeesite.modules.schedule.service.ScheduleDetailService;
+
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.test.dao.OaCruisetimeDao;
 import com.thinkgem.jeesite.modules.test.entity.OaCruisetime;
@@ -352,7 +354,11 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
   		  calendar.setTime(oaReport.getCreateDate());
   		  
           key.put("Myear", String.valueOf(calendar.get(Calendar.YEAR)));
+
           key.put("Mnum", String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)));
+
+          key.put("Mnum", String.valueOf(calendar.get(Calendar.DAY_OF_YEAR)-1));
+
           SimpleDateFormat sdf = new SimpleDateFormat("M月d日1630时");
           String dayOfToday = sdf.format(calendar.getTime());
           calendar.add(Calendar.DAY_OF_MONTH, -1);
@@ -394,9 +400,11 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
           key.put("chaoxi", chaoxi);
           
           //设置vts数据
+
           //设置值班情况
           List<Map<String, Object>> scheduleList = scheduleDetailService.findSchedule(oaReport.getCreateDate());
           key.put("scheduleList", scheduleList);
+
           
 		//FreeMarkers freemarker = new FreeMarkers();	   
 		//freemarker.createWord(list);
@@ -486,6 +494,8 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
 		if(cal.get(Calendar.HOUR_OF_DAY)<=12){
 			cal.add(Calendar.DAY_OF_MONTH, -1);
 		}
+
+		cal.add(Calendar.DAY_OF_MONTH, -5);
 		oaCruiseStat.setBeginHappenDate(cal.getTime());
 		oaCruiseStat.setEndHappenDate(cal.getTime());
 		return this.getStatics(oaCruiseStat);

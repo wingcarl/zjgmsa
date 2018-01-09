@@ -176,6 +176,70 @@ public class MsaController {
 		     resp.getWriter().write(json);    
 			 return null;
 		 }
+
+	 
+	 @RequestMapping(value = "findDangerStat", method=RequestMethod.POST)
+	    public String findDangerStat(HttpServletResponse resp) throws IOException{
+		    List<MsaIndexStat> dataList = msaService.getDangerStatics();
+			ObjectMapper mapper = new ObjectMapper();    //提供java-json相互转换功能的类
+		        
+		     String json = mapper.writeValueAsString(dataList);    //将list中的对象转换为Json格式的数组
+		        
+		     System.out.println(json);
+			 resp.setContentType("text/html; charset=utf-8");
+		     resp.getWriter().write(json);    
+			 return null;
+		 }
+	 	
+	 	@RequestMapping(value = "findIllegalStat", method=RequestMethod.POST)
+	    public String findIllegalStat(HttpServletResponse resp) throws IOException{
+		    List<List<MsaIndexStat>> dataList = msaService.getIllegalStatics();
+			ObjectMapper mapper = new ObjectMapper();    //提供java-json相互转换功能的类
+		        
+		     String json = mapper.writeValueAsString(dataList);    //将list中的对象转换为Json格式的数组
+		        
+		     System.out.println(json);
+			 resp.setContentType("text/html; charset=utf-8");
+		     resp.getWriter().write(json);    
+			 return null;
+		 }
+	 @RequestMapping(value = "findDangerPie", method=RequestMethod.POST)
+	    public String findDangerPie(HttpServletResponse resp) throws IOException{
+		    List<MsaIndexStat> dataList = msaService.getDangerPie();
+			ObjectMapper mapper = new ObjectMapper();    //提供java-json相互转换功能的类
+		        
+		     String json = mapper.writeValueAsString(dataList);    //将list中的对象转换为Json格式的数组
+		        
+		     System.out.println(json);
+			 resp.setContentType("text/html; charset=utf-8");
+		     resp.getWriter().write(json);    
+			 return null;
+		 }
+	 @RequestMapping(value = "findDangerPie2", method=RequestMethod.POST)
+	    public String findDangerPie2(HttpServletResponse resp) throws IOException{
+		    List<MsaIndexStat> dataList = msaService.getDangerPie2();
+			ObjectMapper mapper = new ObjectMapper();    //提供java-json相互转换功能的类
+		        
+		     String json = mapper.writeValueAsString(dataList);    //将list中的对象转换为Json格式的数组
+		        
+		     System.out.println(json);
+			 resp.setContentType("text/html; charset=utf-8");
+		     resp.getWriter().write(json);    
+			 return null;
+		 }
+	 @RequestMapping(value = "findDangerByMonth", method=RequestMethod.POST)
+	    public String findDangerByMonth(HttpServletResponse resp) throws IOException{
+		    List<MsaIndexStat> dataList = msaService.getDangerStaticsByMonth();
+			ObjectMapper mapper = new ObjectMapper();    //提供java-json相互转换功能的类
+		        
+		     String json = mapper.writeValueAsString(dataList);    //将list中的对象转换为Json格式的数组
+		        
+		     System.out.println(json);
+			 resp.setContentType("text/html; charset=utf-8");
+		     resp.getWriter().write(json);    
+			 return null;
+		 }
+
 	private Map<String,Object> getSchedule(){
 		Map<String,Object> scheduleMap = new HashMap<String,Object>();
 		

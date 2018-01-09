@@ -6,7 +6,9 @@ package com.thinkgem.jeesite.modules.schedule.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import java.util.Date;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.common.utils.DateUtils;
+
 import com.thinkgem.jeesite.common.utils.ZJGMSAUtils;
+
 import com.thinkgem.jeesite.modules.schedule.entity.ScheduleDetail;
 import com.thinkgem.jeesite.modules.schedule.entity.ScheduleUser;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
@@ -39,6 +43,7 @@ public class ScheduleDetailService extends CrudService<ScheduleDetailDao, Schedu
 	}
 	
 	public List<ScheduleDetail> findList(ScheduleDetail scheduleDetail) {
+
 		scheduleDetail.getSqlMap().put("dsf", dataScopeFilter(scheduleDetail.getCurrentUser(), "c", "u"));
 
 		return super.findList(scheduleDetail);
@@ -68,6 +73,10 @@ public class ScheduleDetailService extends CrudService<ScheduleDetailDao, Schedu
 		return list1;
 		
 	}
+
+		return super.findList(scheduleDetail);
+	}
+	
 	public Page<ScheduleDetail> findPage(Page<ScheduleDetail> page, ScheduleDetail scheduleDetail) {
 		scheduleDetail.getSqlMap().put("dsf", dataScopeFilter(scheduleDetail.getCurrentUser(), "c", "u"));
 

@@ -16,6 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.oa.entity.OaIllegal;
+<<<<<<< HEAD
+=======
+import com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat;
+>>>>>>> origin/master
 import com.thinkgem.jeesite.modules.oa.dao.OaIllegalDao;
 
 /**
@@ -72,5 +76,29 @@ public class OaIllegalService extends CrudService<OaIllegalDao, OaIllegal> {
 		
 		return mi;
 	}
+
+
+	public List<MsaIndexStat> getIllegalSum(OaIllegal di) {
+		
+		return oaIllegalDao.getIllegalSum(di);
+	}
+
+	public List<MsaIndexStat> getIllegalCountByMonth(OaIllegal di) {
+		
+		return oaIllegalDao.getIllegalCountByMonth(di);
+	}
+
+	public List<MsaIndexStat> getIllegalByType(OaIllegal di) {
+		return oaIllegalDao.getIllegalByType(di);
+	}
+
+	public List<MsaIndexStat> getIllegalByResult(OaIllegal di) {
+		return oaIllegalDao.getIllegalByResult(di);
+	}
+
+	public List<MsaIndexStat> getIllegalByLocation(OaIllegal di) {
+		return oaIllegalDao.getIllegalByLocation(di);
+	}
+
 	
 }

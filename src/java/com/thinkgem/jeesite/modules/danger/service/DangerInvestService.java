@@ -26,6 +26,9 @@ import com.thinkgem.jeesite.modules.danger.entity.DangerInvest;
 import com.thinkgem.jeesite.modules.danger.entity.DangerInvestDetail;
 import com.thinkgem.jeesite.modules.danger.entity.DangerInvestSpy;
 import com.thinkgem.jeesite.modules.danger.entity.DangerInvestStat;
+
+import com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat;
+
 import com.thinkgem.jeesite.modules.test.dao.OaCruisetimeDao;
 import com.thinkgem.jeesite.modules.test.entity.OaCruisetime;
 import com.thinkgem.jeesite.modules.danger.dao.DangerInvestDao;
@@ -207,5 +210,20 @@ public class DangerInvestService extends CrudService<DangerInvestDao, DangerInve
 		
 		
 	}
+
+
+	public List<MsaIndexStat> findDataByMonth(MsaIndexStat stat) {
+		return dangerInvestDao.findDataByMonth(stat);
+	}
+
+	public List<MsaIndexStat> findDataByType(MsaIndexStat stat) {
+		// TODO Auto-generated method stub
+		return dangerInvestDao.findDataByType(stat);
+	}
+
+	public List<MsaIndexStat> findDataByRecify(MsaIndexStat stat) {
+		return dangerInvestDao.findDataByRecify(stat);
+	}
+
 	
 }

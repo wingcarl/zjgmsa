@@ -194,12 +194,15 @@ public class FlowMeasureTypeService extends CrudService<FlowMeasureTypeDao, Flow
 				if("6".equals(params[i])){
 					sectionList.add("七干河观测点");
 					continue;
+<<<<<<< HEAD
 				}if("7".equals(params[i])){
 					sectionList.add("六干河观测点");
 					continue;
 				}if("8".equals(params[i])){
 					sectionList.add("老沙观测点");
 					continue;
+=======
+>>>>>>> origin/master
 				}
 			}
 			flowMeasureType.setSectionList(sectionList);

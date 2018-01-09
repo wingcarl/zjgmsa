@@ -9,6 +9,8 @@ import java.util.Map;
 
 import com.thinkgem.jeesite.common.persistence.CrudDao;
 import com.thinkgem.jeesite.common.persistence.annotation.MyBatisDao;
+
+import com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat;
 import com.thinkgem.jeesite.modules.oa.entity.OaIllegal;
 
 /**
@@ -25,5 +27,15 @@ public interface OaIllegalDao extends CrudDao<OaIllegal> {
 	List<OaIllegal> findByOaCruisedata(OaIllegal oaIllegal);
 
 	List<Map<String, Object>> getIllegalCount(OaIllegal oaIllegal);
+
+	List<MsaIndexStat> getIllegalSum(OaIllegal di);
+
+	List<MsaIndexStat> getIllegalCountByMonth(OaIllegal di);
+
+	List<MsaIndexStat> getIllegalByType(OaIllegal di);
+
+	List<MsaIndexStat> getIllegalByResult(OaIllegal di);
+
+	List<MsaIndexStat> getIllegalByLocation(OaIllegal di);
 	
 }
