@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.pollute.dao.AntiFoulShipDao">
+    
+	<sql id="antiFoulShipColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.ship_name AS "shipName",
+		a.company AS "company.id"
+	</sql>
+	
+	<sql id="antiFoulShipJoins">
+		LEFT JOIN anti_foul_company b ON b.id = a.company
+	</sql>
+    
+	<select id="get" resultType="AntiFoulShip">
+		SELECT 
+			<include refid="antiFoulShipColumns"/>
+		FROM anti_foul_ship a
+		<include refid="antiFoulShipJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AntiFoulShip">
+		SELECT 
+			<include refid="antiFoulShipColumns"/>
+		FROM anti_foul_ship a
+		<include refid="antiFoulShipJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="shipName != null and shipName != ''">
+				AND a.ship_name = #{shipName}
+			</if>
+			<if test="company != null and company != ''">
+				AND a.company = #{company.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AntiFoulShip">
+		SELECT 
+			<include refid="antiFoulShipColumns"/>
+		FROM anti_foul_ship a
+		<include refid="antiFoulShipJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO anti_foul_ship(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			ship_name,
+			company
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{shipName},
+			#{company.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE anti_foul_ship SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			ship_name = #{shipName},
+			company = #{company.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE anti_foul_ship SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE company = #{company.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

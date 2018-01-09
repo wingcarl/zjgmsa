@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.intercept.dao.GridManaInterceptDao">
+    
+	<sql id="gridManaInterceptColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.intercept_date AS "interceptDate",
+		a.ship_name AS "shipName",
+		a.intercept_ship_name AS "interceptShipName",
+		a.ship_location AS "shipLocation",
+		a.deal_detail AS "dealDetail"
+	</sql>
+	
+	<sql id="gridManaInterceptJoins">
+	</sql>
+    
+	<select id="get" resultType="GridManaIntercept">
+		SELECT 
+			<include refid="gridManaInterceptColumns"/>
+		FROM grid_mana_intercept a
+		<include refid="gridManaInterceptJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="getCount" resultType="java.util.Map">
+		SELECT count(*) as counter from grid_mana_intercept a
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginInterceptDate != null and endInterceptDate != null and beginInterceptDate != '' and endInterceptDate != ''">
+				AND a.intercept_date BETWEEN #{beginInterceptDate} AND #{endInterceptDate}
+			</if>
+		</where>
+	</select>
+	<select id="findList" resultType="GridManaIntercept">
+		SELECT 
+			<include refid="gridManaInterceptColumns"/>
+		FROM grid_mana_intercept a
+		<include refid="gridManaInterceptJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginInterceptDate != null and endInterceptDate != null and beginInterceptDate != '' and endInterceptDate != ''">
+				AND a.intercept_date BETWEEN #{beginInterceptDate} AND #{endInterceptDate}
+			</if>
+			<if test="shipName != null and shipName != ''">
+				AND a.ship_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shipName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shipName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shipName},'%')</if>
+			</if>
+			<if test="interceptShipName != null and interceptShipName != ''">
+				AND a.intercept_ship_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{interceptShipName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{interceptShipName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{interceptShipName},'%')</if>
+			</if>
+			<if test="shipLocation != null and shipLocation != ''">
+				AND a.ship_location LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shipLocation}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shipLocation}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shipLocation},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.intercept_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="GridManaIntercept">
+		SELECT 
+			<include refid="gridManaInterceptColumns"/>
+		FROM grid_mana_intercept a
+		<include refid="gridManaInterceptJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO grid_mana_intercept(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			intercept_date,
+			ship_name,
+			intercept_ship_name,
+			ship_location,
+			deal_detail
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{interceptDate},
+			#{shipName},
+			#{interceptShipName},
+			#{shipLocation},
+			#{dealDetail}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE grid_mana_intercept SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			intercept_date = #{interceptDate},
+			ship_name = #{shipName},
+			intercept_ship_name = #{interceptShipName},
+			ship_location = #{shipLocation},
+			deal_detail = #{dealDetail}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE grid_mana_intercept SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

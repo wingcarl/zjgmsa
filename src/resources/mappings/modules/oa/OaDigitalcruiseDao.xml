@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oa.dao.OaDigitalcruiseDao">
+    
+	<sql id="oaDigitalcruiseColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		DATE_FORMAT(a.create_date,'%Y-%m-%d') AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.cruise_people AS "cruisePeople",
+		a.cruise_time AS "cruiseTime",
+		a.cruise_area AS "cruiseArea",
+		a.solve_problem AS "solveProblem",
+		a.cruise_times AS "cruiseTimes",
+		a.cruise_total_time AS "cruiseTotalTime",
+		a.illegal_count AS "illegalCount",
+		a.equip_problem As "equipProblem",
+		u.name As "createBy.name",
+		c.name As "createBy.office.name",
+		a.dkyc As "dkyc",
+		a.yscc As "yscc",
+		a.ysrc As "ysrc"
+	</sql>
+	
+	<sql id="oaDigitalcruiseJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+    
+	<select id="get" resultType="OaDigitalcruise">
+		SELECT 
+			<include refid="oaDigitalcruiseColumns"/>
+		FROM oa_digitalcruise a
+		<include refid="oaDigitalcruiseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OaDigitalcruise">
+		SELECT 
+			<include refid="oaDigitalcruiseColumns"/>
+		FROM oa_digitalcruise a
+		<include refid="oaDigitalcruiseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginHappenDate != null and beginHappenDate != ''">
+					And  DATE_FORMAT(a.create_date,'%Y-%m-%d') = DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') 
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getPortStatics" resultType="OaDigitalcruise">
+		SELECT 
+			sum(a.dkyc) AS "dkyc",sum(a.yscc) AS "yscc",sum(a.ysrc) AS "ysrc"
+		FROM oa_digitalcruise a
+		<include refid="oaDigitalcruiseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="officeId != null and officeId != ''">
+					And c.id in (select id from sys_office sy where (sy.parent_ids like concat(concat('%',#{officeId}),'%') or sy.id=#{officeId} ) and del_flag = #{DEL_FLAG_NORMAL})
+			</if>
+			<if test="beginHappenDate != null and beginHappenDate != '' and endHappenDate != null and endHappenDate != ''">
+					And  DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')    
+			</if>
+		</where>
+				${sqlMap.dsf}
+
+	</select>
+	<select id="findAllList" resultType="OaDigitalcruise">
+		SELECT 
+			<include refid="oaDigitalcruiseColumns"/>
+		FROM oa_digitalcruise a
+		<include refid="oaDigitalcruiseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getDigitalcruiseDataByDate" resultType="OaDigitalcruise">
+		SELECT 
+				<include refid="oaDigitalcruiseColumns"/>
+						FROM oa_digitalcruise a
+		<include refid="oaDigitalcruiseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+				<if test="createBy != null and createBy != '' ">
+					AND  c.id = #{createBy.office.id} 
+				</if>
+				ORDER BY a.create_date DESC LIMIT 1
+		</where>
+	</select>
+	<select id="getTodayStatics" resultType="java.util.Map">
+		select distinct f.`name` as cname from oa_digitalcruise o 
+			left join sys_user u on o.create_by=u.id 
+			left join sys_office f on u.office_id = f.id
+			where o.del_flag = 0 AND DATE_FORMAT(o.create_date,'%Y-%m-%d')=DATE_FORMAT(#{0},'%Y-%m-%d')
+	</select>
+	<insert id="insert">
+		INSERT INTO oa_digitalcruise(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			cruise_people,
+			cruise_time,
+			cruise_area,
+			solve_problem,
+			cruise_times,
+			cruise_total_time,
+			illegal_count,
+			equip_problem,
+			dkyc,
+			yscc,
+			ysrc
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{cruisePeople},
+			#{cruiseTime},
+			#{cruiseArea},
+			#{solveProblem},
+			#{cruiseTimes},
+			#{cruiseTotalTime},
+			#{illegalCount},
+			#{equipProblem},
+			#{dkyc},
+			#{yscc},
+			#{ysrc}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE oa_digitalcruise SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			cruise_people = #{cruisePeople},
+			cruise_time = #{cruiseTime},
+			cruise_area = #{cruiseArea},
+			solve_problem = #{solveProblem},
+			cruise_times = #{cruiseTimes},
+			cruise_total_time = #{cruiseTotalTime},
+			illegal_count = #{illegalCount},
+			equip_problem = #{equipProblem},
+			dkyc = #{dkyc},
+			yscc = #{yscc},
+			ysrc = #{ysrc}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE oa_digitalcruise SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

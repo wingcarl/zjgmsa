@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cruise.dao.CruiseWeekPlanDao">
+    
+	<sql id="cruiseWeekPlanColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.start_date AS "startDate",
+		a.end_date AS "endDate",
+		a.office_id AS "office.id",
+		a.hxt_id AS "hxtId",
+		a.cruise_grid AS "cruiseGrid",
+		a.cruise_time AS "cruiseTime",
+		a.important_pos AS "importantPos",
+		a.important_content AS "importantContent",
+		o10.name AS "office.name"
+	</sql>
+	
+	<sql id="cruiseWeekPlanJoins">
+		LEFT JOIN sys_office o10 ON o10.id = a.office_id
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN sys_office c ON c.id = o10.parent_id
+	</sql>
+    
+	<select id="get" resultType="CruiseWeekPlan">
+		SELECT 
+			<include refid="cruiseWeekPlanColumns"/>
+		FROM cruise_week_plan a
+		<include refid="cruiseWeekPlanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="findCruiseWeekPlanListByOfficeId" resultType="CruiseWeekPlan">
+		SELECT 
+			<include refid="cruiseWeekPlanColumns"/>
+		FROM cruise_week_plan a
+		<include refid="cruiseWeekPlanJoins"/>
+		WHERE a.office_id = #{office.id} AND a.del_flag= #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<select id="findList" resultType="CruiseWeekPlan">
+		SELECT 
+			<include refid="cruiseWeekPlanColumns"/>
+		FROM cruise_week_plan a
+		<include refid="cruiseWeekPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="happenDate != null and happenDate != ''">
+				AND DATE_FORMAT(a.start_date,'%Y-%m-%d') = DATE_FORMAT(#{happenDate},'%Y-%m-%d') 
+			</if>
+		</where>
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.start_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CruiseWeekPlan">
+		SELECT 
+			<include refid="cruiseWeekPlanColumns"/>
+		FROM cruise_week_plan a
+		<include refid="cruiseWeekPlanJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>	
+		${sqlMap.dsf}	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cruise_week_plan(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			start_date,
+			end_date,
+			office_id,
+			hxt_id,
+			cruise_grid,
+			cruise_time,
+			important_pos,
+			important_content
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{startDate},
+			#{endDate},
+			#{office.id},
+			#{hxtId},
+			#{cruiseGrid},
+			#{cruiseTime},
+			#{importantPos},
+			#{importantContent}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cruise_week_plan SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			office_id = #{office.id},
+			hxt_id = #{hxtId},
+			cruise_grid = #{cruiseGrid},
+			cruise_time = #{cruiseTime},
+			important_pos = #{importantPos},
+			important_content = #{importantContent}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE cruise_week_plan SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

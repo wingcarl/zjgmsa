@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.flow.dao.FlowMeasureScaleDao">
+    
+	<sql id="flowMeasureScaleColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.section_name AS "sectionName",
+		a.equivalent_weight AS "equivalentWeight",
+		a.total AS "total",
+		a.up_total AS "upTotal",
+		a.up_less_30 AS "upLess30",
+		a.up_between_30_50 AS "upBetween3050",
+		a.up_between_50_90 AS "upBetween5090",
+		a.up_between_90_180 AS "upBetween90180",
+		a.up_more_180 AS "upMore180",
+		a.down_total AS "downTotal",
+		a.down_less_30 AS "downLess30",
+		a.down_between_30_50 AS "downBetween3050",
+		a.down_between_50_90 AS "downBetween5090",
+		a.down_between_90_180 AS "downBetween90180",
+		a.down_more_180 AS "downMore180",
+		a.flow_measure_date AS "flowMeasureDate"
+	</sql>
+	
+	<sql id="flowMeasureScaleJoins">
+	</sql>
+    
+	<select id="get" resultType="FlowMeasureScale">
+		SELECT 
+			<include refid="flowMeasureScaleColumns"/>
+		FROM flow_measure_scale a
+		<include refid="flowMeasureScaleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="FlowMeasureScale">
+		SELECT 
+			<include refid="flowMeasureScaleColumns"/>
+		FROM flow_measure_scale a
+		<include refid="flowMeasureScaleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sectionName != null and sectionName != ''">
+				AND a.section_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sectionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sectionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sectionName},'%')</if>
+			</if>
+			<if test="beginFindTime != null and endFindTime != null and beginFindTime != '' and endFindTime != ''">
+				AND a.flow_measure_date BETWEEN #{beginFindTime} AND #{endFindTime}
+			</if>
+			<if test="sectionList != null and sectionList.size()>0">
+			AND a.section_name IN
+			<foreach item="item" index="index" collection="sectionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.flow_measure_date,a.section_name DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findListBySection" resultType="FlowMeasureScale">
+		SELECT 
+			a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.section_name AS "sectionName",
+		sum(a.equivalent_weight) AS "equivalentWeight",
+		sum(a.total) AS "total",
+		sum(a.up_total) AS "upTotal",
+		sum(a.up_less_30) AS "upLess30",
+		sum(a.up_between_30_50) AS "upBetween3050",
+		sum(a.up_between_50_90) AS "upBetween5090",
+		sum(a.up_between_90_180) AS "upBetween90180",
+		sum(a.up_more_180) AS "upMore180",
+		sum(a.down_total) AS "downTotal",
+		sum(a.down_less_30) AS "downLess30",
+		sum(a.down_between_30_50) AS "downBetween3050",
+		sum(a.down_between_50_90) AS "downBetween5090",
+		sum(a.down_between_90_180) AS "downBetween90180",
+		sum(a.down_more_180) AS "downMore180",
+		a.flow_measure_date AS "flowMeasureDate"
+		FROM flow_measure_scale a
+		<include refid="flowMeasureScaleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="sectionName != null and sectionName != ''">
+				AND a.section_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{sectionName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{sectionName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{sectionName},'%')</if>
+			</if>
+			<if test="sectionList != null and sectionList.size()>0">
+			AND a.section_name IN
+			<foreach item="item" index="index" collection="sectionList" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			</if>
+			<if test="beginFindTime != null and endFindTime != null and beginFindTime != '' and endFindTime != ''">
+				AND a.flow_measure_date BETWEEN #{beginFindTime} AND #{endFindTime}
+			</if>
+		</where>
+		group by a.flow_measure_date 
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.flow_measure_date,a.section_name DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findAllList" resultType="FlowMeasureScale">
+		SELECT 
+			<include refid="flowMeasureScaleColumns"/>
+		FROM flow_measure_scale a
+		<include refid="flowMeasureScaleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO flow_measure_scale(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			section_name,
+			equivalent_weight,
+			total,
+			up_total,
+			up_less_30,
+			up_between_30_50,
+			up_between_50_90,
+			up_between_90_180,
+			up_more_180,
+			down_total,
+			down_less_30,
+			down_between_30_50,
+			down_between_50_90,
+			down_between_90_180,
+			down_more_180,
+			flow_measure_date
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{sectionName},
+			#{equivalentWeight},
+			#{total},
+			#{upTotal},
+			#{upLess30},
+			#{upBetween3050},
+			#{upBetween5090},
+			#{upBetween90180},
+			#{upMore180},
+			#{downTotal},
+			#{downLess30},
+			#{downBetween3050},
+			#{downBetween5090},
+			#{downBetween90180},
+			#{downMore180},
+			#{flowMeasureDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE flow_measure_scale SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			section_name = #{sectionName},
+			equivalent_weight = #{equivalentWeight},
+			total = #{total},
+			up_total = #{upTotal},
+			up_less_30 = #{upLess30},
+			up_between_30_50 = #{upBetween3050},
+			up_between_50_90 = #{upBetween5090},
+			up_between_90_180 = #{upBetween90180},
+			up_more_180 = #{upMore180},
+			down_total = #{downTotal},
+			down_less_30 = #{downLess30},
+			down_between_30_50 = #{downBetween3050},
+			down_between_50_90 = #{downBetween5090},
+			down_between_90_180 = #{downBetween90180},
+			down_more_180 = #{downMore180},
+			flow_measure_date = #{flowMeasureDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE flow_measure_scale SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

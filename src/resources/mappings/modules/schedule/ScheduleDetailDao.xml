@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.schedule.dao.ScheduleDetailDao">
+    
+	<sql id="scheduleDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.office_id AS "office.id",
+		a.schedule_date AS "scheduleDate",
+		c.name As "office.name",
+		a.user_name1 As userList1,
+		a.user_name2 As userList2,
+		a.user_name3 As userList3,
+		a.user_name4 As userList4,
+		a.confirm As confirm,
+		u1.name AS "confirmBy"
+	</sql>
+	
+	<sql id="scheduleDetailJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = a.office_id
+		LEFT JOIN sys_user u1 ON u1.id = a.confirm_by
+	</sql>
+    
+	<select id="get" resultType="ScheduleDetail">
+		SELECT 
+			<include refid="scheduleDetailColumns"/>
+		FROM schedule_detail a
+		<include refid="scheduleDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="getByDate" resultType="ScheduleDetail">
+		SELECT 
+			<include refid="scheduleDetailColumns"/>
+		FROM schedule_detail a
+		<include refid="scheduleDetailJoins"/>
+		WHERE DATE_FORMAT(a.schedule_date,'%Y-%m-%d')=DATE_FORMAT(#{0},'%Y-%m-%d') AND a.del_flag=0
+	</select>
+	<select id="findList" resultType="ScheduleDetail">
+		SELECT 
+			<include refid="scheduleDetailColumns"/>
+		FROM schedule_detail a
+		<include refid="scheduleDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office_id = #{office.id}
+			</if>
+			<if test="scheduleDate != null and scheduleDate != ''">
+				AND DATE_FORMAT(a.schedule_date,'%Y-%m-%d') = DATE_FORMAT(#{scheduleDate},'%Y-%m-%d')
+			</if>
+		</where>
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.schedule_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findListByUsers" resultType="ScheduleDetail">
+		SELECT 
+			<include refid="scheduleDetailColumns"/>
+		FROM schedule_detail a
+		<include refid="scheduleDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			
+			
+			<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+				AND a.schedule_date BETWEEN #{beginHappenDate} AND #{endHappenDate}
+			</if>
+			
+		</where>
+		${sqlMap.dsf}
+		
+		ORDER BY a.schedule_date ASC
+		
+	</select>
+
+	<select id="findAllList" resultType="ScheduleDetail">
+		SELECT 
+			<include refid="scheduleDetailColumns"/>
+		FROM schedule_detail a
+		<include refid="scheduleDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO schedule_detail(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			office_id,
+			schedule_date,
+			user_name1,
+			user_name2,
+			user_name3,
+			user_name4
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{office.id},
+			#{scheduleDate},
+			#{userList1},
+			#{userList2},
+			#{userList3},
+			#{userList4}
+		)
+	</insert>
+	<insert id="saveDetailUser">
+		INSERT INTO schedule_user(
+			schedule_id,
+			user_id,
+			type
+		) VALUES (
+			#{scheduleId},
+			#{userId},
+			#{type}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE schedule_detail SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			office_id = #{office.id},
+			schedule_date = #{scheduleDate},
+			user_name1=#{userList1},
+			user_name2=#{userList2},
+			user_name3=#{userList3},
+			user_name4=#{userList4}
+		WHERE id = #{id}
+	</update>
+	<update id="confirm">
+		UPDATE schedule_detail SET 	
+			confirm_by = #{updateBy.id},
+			confirm = 1
+		WHERE id = #{id}
+	</update>	
+	<update id="delete">
+		UPDATE schedule_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

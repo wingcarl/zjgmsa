@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.affair.dao.AffairTransferInfoDao">
+    
+	<sql id="affairTransferInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.first_ship_name AS "firstShipName",
+		a.first_ship_departure AS "firstShipDeparture",
+		a.first_move_num AS "firstMoveNum",
+		a.first_cargo AS "firstCargo",
+		a.first_unload_port AS "firstUnloadPort",
+		a.first_in_out AS "firstInOut",
+		a.first_load AS "firstLoad",
+		a.number AS "number",
+		a.apply_office AS "applyOffice",
+		u.name AS "createBy.name",
+		a.contactor AS "contactor",
+		a.telephone AS "telephone",
+		a.office AS "office.id",
+		o.name AS "office.name"
+	</sql>
+	
+	<sql id="affairTransferInfoJoins">
+		left join sys_user u on u.id=a.create_by
+		left join sys_office o on o.id = a.office
+	</sql>
+    
+	<select id="get" resultType="AffairTransferInfo">
+		SELECT 
+			<include refid="affairTransferInfoColumns"/>
+		FROM affair_transfer_info a
+		<include refid="affairTransferInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AffairTransferInfo">
+		SELECT 
+			<include refid="affairTransferInfoColumns"/>
+		FROM affair_transfer_info a
+		<include refid="affairTransferInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="beginCreateDate != null and endCreateDate != null and beginCreateDate != '' and endCreateDate != ''">
+				AND a.update_date BETWEEN #{beginCreateDate} AND #{endCreateDate}
+			</if>
+			<if test="firstShipName != null and firstShipName != ''">
+				AND a.first_ship_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstShipName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstShipName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstShipName},'%')</if>
+			</if>
+			<if test="firstShipDeparture != null and firstShipDeparture != ''">
+				AND a.first_ship_departure LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstShipDeparture}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstShipDeparture}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstShipDeparture},'%')</if>
+			</if>
+			<if test="firstMoveNum != null and firstMoveNum != ''">
+				AND a.first_move_num LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstMoveNum}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstMoveNum}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstMoveNum},'%')</if>
+			</if>
+			<if test="firstCargo != null and firstCargo != ''">
+				AND a.first_cargo LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstCargo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstCargo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstCargo},'%')</if>
+			</if>
+			<if test="firstUnloadPort != null and firstUnloadPort != ''">
+				AND a.first_unload_port LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstUnloadPort}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstUnloadPort}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstUnloadPort},'%')</if>
+			</if>
+			<if test="firstInOut != null and firstInOut != ''">
+				AND a.first_in_out = #{firstInOut}
+			</if>
+			<if test="applyOffice != null and applyOffice != ''">
+				AND a.apply_office LIKE 
+					<if test="dbName == 'oracle'">'%'||#{applyOffice}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{applyOffice}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{applyOffice},'%')</if>
+			</if>
+			<if test="office!=null and office.id != null and office.id != ''">
+				AND a.office LIKE 
+					<if test="dbName == 'oracle'">'%'||#{office.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{office.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{office.id},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AffairTransferInfo">
+		SELECT 
+			<include refid="affairTransferInfoColumns"/>
+		FROM affair_transfer_info a
+		<include refid="affairTransferInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO affair_transfer_info(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			first_ship_name,
+			first_ship_departure,
+			first_move_num,
+			first_cargo,
+			first_unload_port,
+			first_in_out,
+			first_load,
+			number,
+			apply_office,
+			contactor,
+			telephone,
+			office
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{firstShipName},
+			#{firstShipDeparture},
+			#{firstMoveNum},
+			#{firstCargo},
+			#{firstUnloadPort},
+			#{firstInOut},
+			#{firstLoad},
+			#{number},
+			#{applyOffice},
+			#{contactor},
+			#{telephone},
+			#{office.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE affair_transfer_info SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			first_ship_name = #{firstShipName},
+			first_ship_departure = #{firstShipDeparture},
+			first_move_num = #{firstMoveNum},
+			first_cargo = #{firstCargo},
+			first_unload_port = #{firstUnloadPort},
+			first_in_out = #{firstInOut},
+			first_load = #{firstLoad},
+			number = #{number},
+			apply_office = #{applyOffice},
+			contactor = #{contactor},
+			telephone = #{telephone},
+			office = #{office.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE affair_transfer_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

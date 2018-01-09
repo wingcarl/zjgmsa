@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.msa.dao.TideDao">
+    
+	
+    
+	
+	
+	<select id="getDailyTideList" resultType="MsaTideDaily">
+		SELECT 	a.id AS "id",
+		a.tide_no AS "tideNo",
+		a.tide_date AS "tideDate",
+		a.tide_time AS "tideTime",
+		a.tide_high AS "tideHigh"
+		FROM tide_daily a
+		<where>
+			<if test="tideDate != null and tideDate != ''">
+				 a.tide_date = #{tideDate}
+			</if>
+		</where>
+		
+		ORDER BY a.tide_no ASC
+		
+	</select>
+	<select id="findTideHourlyList" resultType="MsaTideHourly">
+		SELECT 	a.id AS "id",
+		a.tide_time AS "tideTime",
+		a.tide_high AS "tideHigh"
+		
+		FROM tide_hourly a
+		<where>
+			<if test="tideBeginTime != null and tideBeginTime != '' and tideEndTime != null and tideEndTime != ''">
+				 a.tide_time between #{tideBeginTime} AND #{tideEndTime} 
+			</if>
+		</where>
+		ORDER BY a.tide_time ASC		
+	</select>
+	
+	
+	
+</mapper>

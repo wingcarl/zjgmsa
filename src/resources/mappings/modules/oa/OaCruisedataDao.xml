@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oa.dao.OaCruisedataDao">
+    
+	<sql id="oaCruisedataColumns">
+		a.id AS "id",
+		a.zyhl AS "zyhl",
+		a.mdtbq AS "mdtbq",
+		a.sgzyq AS "sgzyq",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.wfhxgd AS "wfhxgd",
+		a.wfsgzy AS "wfsgzy",
+		a.kymt AS "kymt",
+		a.zhbzyc AS "zhbzyc",
+		a.yhcs AS "yhcs",
+		a.pnq AS "pnq",
+		a.wfyzcs AS "wfyzcs",
+		a.psc AS "psc",
+		a.danger_port AS "dangerPort",
+		a.jtzz AS "jtzz",
+		a.ffxczl AS "ffxczl",
+		a.qbq AS "qbq",
+		a.cyjz AS "cyjz",
+		a.fxwz AS "fxwz",
+		a.clwz AS "clwz",
+		a.qsk AS "qsk",
+		a.wfpf AS "wfpf",
+		a.cruise_people As "cruisePeople",
+		a.solve_problem AS "solveProblem",
+		a.cruise_area As "cruiseArea",
+		a.jzcb As "jzcb",
+		a.jzry As "jzry",
+		a.cdzfrycs As "cdzfrycs",
+		a.qtwfxw As "qtwfxw",
+		u.name As "createBy.name",
+		c.name As "createBy.office.name",
+		c.parent_id As "createBy.office.parent.id"
+	</sql>
+	
+	<sql id="oaCruisedataJoins">
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.office_id
+	</sql>
+ 
+	<select id="get" resultType="OaCruisedata">
+		SELECT 
+			<include refid="oaCruisedataColumns"/>
+		FROM oa_cruisedata a
+		<include refid="oaCruisedataJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getCruiseTimeByDataId" resultType="java.util.LinkedHashMap">
+		SELECT 
+		a.start_time ,
+		a.end_time
+		FROM oa_cruisetime a
+		WHERE a.del_flag = 0 and a.oa_cruisedata_id = #{dataId} ORDER BY a.start_time ASC
+	</select>
+	
+	<select id="getStaticsById" resultType="OaCruiseStat">
+		SELECT 
+		a.oa_cruisedata_id As "cruiseDataId",
+		a.name As "name",
+		a.zyhl AS "zyhl",
+		a.mdtbq AS "mdtbq",
+		a.sgzyq AS "sgzyq",
+		a.wfhxgd AS "wfhxgd",
+		a.wfsgzy AS "wfsgzy",
+		a.kymt AS "kymt",
+		a.zhbzyc AS "zhbzyc",
+		a.yhcs AS "yhcs",
+		a.pnq AS "pnq",
+		a.wfyzcs AS "wfyzcs",
+		a.psc AS "psc",
+		a.danger_port AS "dangerPort",
+		a.jtzz AS "jtzz",
+		a.ffxczl AS "ffxczl",
+		a.qbq AS "qbq",
+		a.cyjz AS "cyjz",
+		a.fxwz AS "fxwz",
+		a.clwz AS "clwz",
+		a.qsk AS "qsk",
+		a.wfpf AS "wfpf",	
+		a.xhcs AS "xhcs",
+		b.yehangcs AS "yehangcs",
+		a.cruise_people As "cruisePeople",
+		a.dep As "depName",
+		a.qtwfxw As "qtwfxw",
+		round(a.cruise_total_time,1) As "totalTime",
+		round(b.cruise_total_time,1) As "yehangTime"
+		FROM v_total_time a left join v_yehang_time b on a.oa_cruisedata_id = b.oa_cruisedata_id
+		<where>
+			<if test="cruiseDataId != null and cruiseDataId != '' ">
+					a.oa_cruisedata_id  = #{cruiseDataId}
+			</if>
+		</where>
+		${sqlMap.dsf}
+		group by a.name
+	</select>
+	<select id="getStatics" resultType="OaCruiseStat">
+		SELECT 
+		a.name As "name",
+		sum(a.zyhl) AS "zyhl",
+		sum(a.mdtbq) AS "mdtbq",
+		sum(a.sgzyq) AS "sgzyq",
+		sum(a.wfhxgd) AS "wfhxgd",
+		sum(a.wfsgzy) AS "wfsgzy",
+		sum(a.kymt) AS "kymt",
+		sum(a.zhbzyc) AS "zhbzyc",
+		sum(a.yhcs) AS "yhcs",
+		sum(a.pnq) AS "pnq",
+		sum(a.wfyzcs) AS "wfyzcs",
+		sum(a.psc) AS "psc",
+		sum(a.danger_port) AS "dangerPort",
+		sum(a.jtzz) AS "jtzz",
+		sum(a.ffxczl) AS "ffxczl",
+		sum(a.qbq) AS "qbq",
+		sum(a.cyjz) AS "cyjz",
+		sum(a.fxwz) AS "fxwz",
+		sum(a.clwz) AS "clwz",
+		sum(a.qsk) AS "qsk",
+		sum(a.wfpf) AS "wfpf",	
+		sum(a.xhcs) AS "xhcs",
+		sum(b.yehangcs) AS "yehangcs",
+		sum(a.qtwfxw) As "qtwfxw",
+		a.cruise_people As "cruisePeople",
+		a.dep As "depName",
+		round(sum(a.cruise_total_time),1) As "totalTime",
+		round(sum(b.cruise_total_time),1) As "yehangTime"
+		FROM v_total_time a left join v_yehang_time b on a.oa_cruisedata_id = b.oa_cruisedata_id
+		<where>
+			<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+					And  DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+			</if>
+		</where>
+		${sqlMap.dsf}
+		group by a.name
+	</select>
+	<select id="getCruiseTimeByDate" resultType="java.util.Map">
+		select DATE_FORMAT(v.create_date,'%Y-%m-%d') as "da",sum(cruise_total_time) as "totalTime" from v_total_time v 
+			where DATE_FORMAT(v.create_date,'%Y-%m-%d')  BETWEEN DATE_FORMAT(#{0},'%Y-%m-%d') AND DATE_FORMAT(#{1},'%Y-%m-%d')
+			group by DATE_FORMAT(v.create_date,'%Y-%m-%d') 
+			order by DATE_FORMAT(v.create_date,'%Y-%m-%d') DESC
+	</select>
+	
+	<select id="getCruiseYehangByDate" resultType="java.util.Map">
+		select DATE_FORMAT(v.create_date,'%Y-%m-%d') as "da",sum(cruise_total_time) as "totalTime" from v_yehang_time v 
+			where DATE_FORMAT(v.create_date,'%Y-%m-%d')  BETWEEN DATE_FORMAT(#{0},'%Y-%m-%d') AND DATE_FORMAT(#{1},'%Y-%m-%d')
+			group by DATE_FORMAT(v.create_date,'%Y-%m-%d') 
+			order by DATE_FORMAT(v.create_date,'%Y-%m-%d') DESC
+	</select>
+	<select id="getTodayStatics" resultType="java.util.Map">
+		select distinct u.`name` as cname from oa_cruisedata o 
+			left join sys_user u on o.create_by=u.id 
+			where o.del_flag = 0 AND DATE_FORMAT(o.create_date,'%Y-%m-%d')=DATE_FORMAT(#{0},'%Y-%m-%d')
+	</select>
+	
+	<select id="getStaticsMonthly" resultType="OaCruiseStat">
+		SELECT 
+		sum(a.zyhl) AS "zyhl",
+		sum(a.mdtbq) AS "mdtbq",
+		sum(a.sgzyq) AS "sgzyq",
+		sum(a.wfhxgd) AS "wfhxgd",
+		sum(a.wfsgzy) AS "wfsgzy",
+		sum(a.kymt) AS "kymt",
+		sum(a.zhbzyc) AS "zhbzyc",
+		sum(a.yhcs) AS "yhcs",
+		sum(a.pnq) AS "pnq",
+		sum(a.wfyzcs) AS "wfyzcs",
+		sum(a.psc) AS "psc",
+		sum(a.danger_port) AS "dangerPort",
+		sum(a.jtzz) AS "jtzz",
+		sum(a.ffxczl) AS "ffxczl",
+		sum(a.qbq) AS "qbq",
+		sum(a.cyjz) AS "cyjz",
+		sum(a.fxwz) AS "fxwz",
+		sum(a.clwz) AS "clwz",
+		sum(a.qsk) AS "qsk",
+		sum(a.wfpf) AS "wfpf",	
+		sum(a.xhcs) AS "xhcs",
+		sum(b.yehangcs) AS "yehangcs",
+		sum(a.cdzfrycs) As cdzfry,
+		sum(a.qtrycs) As qtry,
+		sum(a.qtwfxw) As qtwfxw,
+		sum(a.other_area) As otherArea,
+		sum(a.jzry) As jzry,
+		sum(a.jzcb) As jzcb,
+		round(sum(a.cruise_total_time),1) As "totalTime",
+		round(sum(b.cruise_total_time),1) As "yehangTime"
+		FROM v_total_time a left join v_yehang_time b on a.oa_cruisedata_id = b.oa_cruisedata_id
+		<include refid="oaCruisedataJoins"/>
+		<where>
+			<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+					And  DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+			</if>
+			<if test="username != null and username != ''">
+					And a.cruise_people like concat(concat('%',#{username}),'%')
+			</if>
+			<if test="create_dept!=null and create_dept.id != null and create_dept.id != ''">
+					And c.id in (select id from sys_office sy where (sy.parent_ids like concat(concat('%',#{create_dept.id}),'%') or sy.id=#{create_dept.id} ) and del_flag = #{DEL_FLAG_NORMAL})
+			</if>
+			
+		</where>
+		${sqlMap.dsf} 
+	</select>
+	<select id="getCruisedataByDate" resultType="OaCruisedata">
+		SELECT 
+				a.id AS "id",
+				a.zyhl AS "zyhl",
+				a.mdtbq AS "mdtbq",
+				a.sgzyq AS "sgzyq",
+				a.create_by AS "createBy.id",
+				a.create_date AS "createDate",
+				a.update_by AS "updateBy.id",
+				a.update_date AS "updateDate",
+				a.remarks AS "remarks",
+				a.del_flag AS "delFlag",
+				a.wfhxgd AS "wfhxgd",
+				a.wfsgzy AS "wfsgzy",
+				a.kymt AS "kymt",
+				a.zhbzyc AS "zhbzyc",
+				a.yhcs AS "yhcs",
+				a.pnq AS "pnq",
+				a.wfyzcs AS "wfyzcs",
+				a.psc AS "psc",
+				a.danger_port AS "dangerPort",
+				a.jtzz AS "jtzz",
+				a.ffxczl AS "ffxczl",
+				a.qbq AS "qbq",
+				a.cyjz AS "cyjz",
+				a.fxwz AS "fxwz",
+				a.clwz AS "clwz",
+				a.qsk AS "qsk",
+				a.wfpf AS "wfpf",
+				a.qtwfxw As "qtwfxw",
+				a.cruise_people As "cruisePeople",
+				a.solve_problem AS "solveProblem",
+				u.name As "createBy.name",
+				c.name As "createBy.office.name",
+				a.cdzfrycs As "cdzfrycs",
+				a.qtrycs As "qtrycs",
+				a.cruise_area As "cruiseArea",
+				a.jzcb As "jzcb",
+				a.jzry As "jzry"
+						FROM oa_cruisedata a
+		<include refid="oaCruisedataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+				<if test="createBy != null and createBy != '' ">
+					AND  c.id = #{createBy.office.id} 
+				</if>
+				ORDER BY a.create_date DESC LIMIT 1
+		</where>
+		
+		${sqlMap.dsf}
+		
+	</select>
+	<select id="getCruisedataByDate1" resultType="OaCruisedata">
+		SELECT 
+				a.id AS "id",
+				a.zyhl AS "zyhl",
+				a.mdtbq AS "mdtbq",
+				a.sgzyq AS "sgzyq",
+				a.create_by AS "createBy.id",
+				a.create_date AS "createDate",
+				a.update_by AS "updateBy.id",
+				a.update_date AS "updateDate",
+				a.remarks AS "remarks",
+				a.del_flag AS "delFlag",
+				a.wfhxgd AS "wfhxgd",
+				a.wfsgzy AS "wfsgzy",
+				a.kymt AS "kymt",
+				a.zhbzyc AS "zhbzyc",
+				a.yhcs AS "yhcs",
+				a.pnq AS "pnq",
+				a.wfyzcs AS "wfyzcs",
+				a.psc AS "psc",
+				a.danger_port AS "dangerPort",
+				a.jtzz AS "jtzz",
+				a.ffxczl AS "ffxczl",
+				a.qbq AS "qbq",
+				a.cyjz AS "cyjz",
+				a.fxwz AS "fxwz",
+				a.clwz AS "clwz",
+				a.qsk AS "qsk",
+				a.wfpf AS "wfpf",
+				a.cruise_people As "cruisePeople",
+				a.solve_problem AS "solveProblem",
+				a.qtwfxw As "qtwfxw",
+				u.name As "createBy.name",
+				c.name As "createBy.office.name",
+				a.cdzfrycs As "cdzfrycs",
+				a.qtrycs As "qtrycs",
+				a.cruise_area As "cruiseArea",
+				a.jzry As "jzry",
+				a.jzcb As "jzcb"
+						FROM oa_cruisedata a
+		<include refid="oaCruisedataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+				<if test="createBy != null and createBy != '' ">
+					AND  c.id = #{createBy.office.id} 
+				</if>
+				<if test="createDate != null and createDate != '' ">
+				AND DATE_FORMAT(a.create_date,'%Y-%m-%d') =  DATE_FORMAT(#{createDate} ,'%Y-%m-%d')
+				</if>
+				ORDER BY a.create_date DESC 
+		</where>
+		
+		${sqlMap.dsf}
+		
+	</select>
+	<select id="findList" resultType="OaCruisedata">
+		SELECT 
+			<include refid="oaCruisedataColumns"/>
+		FROM oa_cruisedata a
+		<include refid="oaCruisedataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="createBy != null and createBy.id != null and createBy.id != ''">
+				AND a.create_by = #{createBy.id}
+			</if>
+			<if test="beginHappenDate != null and endHappenDate != null and beginHappenDate != '' and endHappenDate != ''">
+				AND DATE_FORMAT(a.create_date,'%Y-%m-%d') BETWEEN DATE_FORMAT(#{beginHappenDate},'%Y-%m-%d') AND DATE_FORMAT(#{endHappenDate},'%Y-%m-%d')
+			</if>
+		</where>
+		
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<!-- <select id="findSumStatics" resultType="">
+	
+	</select> -->
+	<select id="findAllList" resultType="OaCruisedata">
+		SELECT 
+			<include refid="oaCruisedataColumns"/>
+		FROM oa_cruisedata a
+		<include refid="oaCruisedataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO oa_cruisedata(
+			id,
+			zyhl,
+			mdtbq,
+			sgzyq,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			wfhxgd,
+			wfsgzy,
+			kymt,
+			zhbzyc,
+			yhcs,
+			pnq,
+			wfyzcs,
+			psc,
+			danger_port,
+			jtzz,
+			ffxczl,
+			qbq,
+			cyjz,
+			fxwz,
+			clwz,
+			qsk,
+			wfpf,
+			solve_problem,
+			cruise_people,
+			cdzfrycs,
+			qtrycs,
+			cruise_area,
+			qtwfxw,
+			other_area,
+			jzry,
+			jzcb
+		) VALUES (
+			#{id},
+			#{zyhl},
+			#{mdtbq},
+			#{sgzyq},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{wfhxgd},
+			#{wfsgzy},
+			#{kymt},
+			#{zhbzyc},
+			#{yhcs},
+			#{pnq},
+			#{wfyzcs},
+			#{psc},
+			#{dangerPort},
+			#{jtzz},
+			#{ffxczl},
+			#{qbq},
+			#{cyjz},
+			#{fxwz},
+			#{clwz},
+			#{qsk},
+			#{wfpf},
+			#{solveProblem},
+			#{cruisePeople},
+			#{cdzfrycs},
+			#{qtrycs},
+			#{cruiseArea},
+			#{qtwfxw},
+			#{otherArea},
+			#{jzry},
+			#{jzcb}
+		)
+	</insert>
+	<insert id="saveArea">
+		INSERT INTO oa_cruisedata_area(
+			id,
+			oa_cruisedata_id,
+			oa_cruisearea_id,
+			times,
+			remark,
+			createBy,
+			createDate) 
+		VALUES (
+			#{id},
+			#{oaCruisedataId},
+			#{oaCruiseareaId},
+			#{times},
+			#{remark},
+			#{createBy},
+			#{createDate}
+		)
+		
+	</insert>
+	<update id="update">
+		UPDATE oa_cruisedata SET 	
+			zyhl = #{zyhl},
+			mdtbq = #{mdtbq},
+			sgzyq = #{sgzyq},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			wfhxgd = #{wfhxgd},
+			wfsgzy = #{wfsgzy},
+			kymt = #{kymt},
+			zhbzyc = #{zhbzyc},
+			yhcs = #{yhcs},
+			pnq = #{pnq},
+			wfyzcs = #{wfyzcs},
+			psc = #{psc},
+			danger_port = #{dangerPort},
+			jtzz = #{jtzz},
+			ffxczl = #{ffxczl},
+			qbq = #{qbq},
+			cyjz = #{cyjz},
+			fxwz = #{fxwz},
+			clwz = #{clwz},
+			qsk = #{qsk},
+			wfpf = #{wfpf},
+			solve_problem = #{solveProblem},
+			cruise_people = #{cruisePeople},
+			cruise_area = #{cruiseArea},
+			cdzfrycs = #{cdzfrycs},
+			qtrycs = #{qtrycs},
+			qtwfxw = #{qtwfxw},
+			other_area = #{otherArea},
+			jzry = #{jzry},
+			jzcb = #{jzcb}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE oa_cruisedata SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

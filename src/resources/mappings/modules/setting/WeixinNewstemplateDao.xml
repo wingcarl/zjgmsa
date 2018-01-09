@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.setting.dao.WeixinNewstemplateDao">
+    
+	<sql id="weixinNewstemplateColumns">
+		a.id AS "id",
+		a.addtime AS "addtime",
+		a.tempatename AS "tempatename",
+		a.type AS "type",
+		a.accountid AS "accountid",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="weixinNewstemplateJoins">
+	</sql>
+    
+	<select id="get" resultType="WeixinNewstemplate">
+		SELECT 
+			<include refid="weixinNewstemplateColumns"/>
+		FROM weixin_newstemplate a
+		<include refid="weixinNewstemplateJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WeixinNewstemplate">
+		SELECT 
+			<include refid="weixinNewstemplateColumns"/>
+		FROM weixin_newstemplate a
+		<include refid="weixinNewstemplateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="tempatename != null and tempatename != ''">
+				AND a.tempatename LIKE 
+					<if test="dbName == 'oracle'">'%'||#{tempatename}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{tempatename}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{tempatename},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WeixinNewstemplate">
+		SELECT 
+			<include refid="weixinNewstemplateColumns"/>
+		FROM weixin_newstemplate a
+		<include refid="weixinNewstemplateJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO weixin_newstemplate(
+			id,
+			addtime,
+			tempatename,
+			type,
+			accountid,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{addtime},
+			#{tempatename},
+			#{type},
+			#{accountid},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE weixin_newstemplate SET 	
+			addtime = #{addtime},
+			tempatename = #{tempatename},
+			type = #{type},
+			accountid = #{accountid},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE weixin_newstemplate SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

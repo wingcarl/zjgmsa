@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.affair.dao.AffairTransferDetailDao">
+    
+	<sql id="affairTransferDetailColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.ship_name AS "shipName",
+		a.no AS "no",
+		a.count AS "count",
+		a.total_count AS "totalCount",
+		a.audit_date AS "auditDate",
+		a.second_id As "second.id",
+		u.name AS "createBy.name",
+		a.img_src AS "imgSrc",
+		a.is_archive AS "isArchive",
+		info.id AS "second.firstId.id",
+		info.first_ship_name AS "second.firstId.firstShipName",
+		info.first_unload_port AS "second.firstId.firstUnloadPort",
+		second.destination AS "second.destination",
+		o.name AS "second.firstId.office.name",
+		o.id AS "second.firstId.office.id"
+	</sql>
+	
+	<sql id="affairTransferDetailJoins">
+		left join sys_user u on a.create_by = u.id
+		left join affair_transfer_second second on second.id = a.second_id
+		left join affair_transfer_info info on info.id = second.first_id
+		left join sys_office o on info.office = o.id
+	</sql>
+    
+	<select id="get" resultType="AffairTransferDetail">
+		SELECT 
+			<include refid="affairTransferDetailColumns"/>
+		FROM affair_transfer_detail a
+		<include refid="affairTransferDetailJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AffairTransferDetail">
+		SELECT 
+			<include refid="affairTransferDetailColumns"/>
+		FROM affair_transfer_detail a
+		<include refid="affairTransferDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="second!=null and second.firstId!=null and second.firstId.firstShipName != null and second.firstId.firstShipName != ''">
+				AND info.first_ship_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{second.firstId.firstShipName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{second.firstId。firstShipName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{second.firstId.firstShipName},'%')</if>
+			</if>
+			<if test="second!=null and second.firstId!=null and second.firstId.firstUnloadPort != null and second.firstId.firstUnloadPort != ''">
+				AND info.first_unload_port LIKE 
+					<if test="dbName == 'oracle'">'%'||#{second.firstId.firstUnloadPort}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{second.firstId.firstUnloadPort}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{second.firstId.firstUnloadPort},'%')</if>
+			</if>
+			<if test="second!=null and second.destination!=null and second.destination != ''">
+				AND second.destination LIKE 
+					<if test="dbName == 'oracle'">'%'||#{second.destination}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{second.destination}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{second.destination},'%')</if>
+			</if>
+			<if test="shipName!=null and shipName != ''">
+				AND a.ship_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{shipName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{shipName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{shipName},'%')</if>
+			</if>
+		</where>
+		${sqlMap.dsf}	
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<when test="isForm !=null and isForm != ''">
+				ORDER BY a.audit_date ,a.total_count ASC
+			</when>
+			<otherwise>
+				ORDER BY a.is_archive ASC,a.audit_date DESC,a.total_count ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AffairTransferDetail">
+		SELECT 
+			<include refid="affairTransferDetailColumns"/>
+		FROM affair_transfer_detail a
+		<include refid="affairTransferDetailJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO affair_transfer_detail(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			ship_name,
+			no,
+			count,
+			total_count,
+			audit_date,
+			second_id,
+			img_src,
+			is_archive
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{shipName},
+			#{no},
+			#{count},
+			#{totalCount},
+			#{auditDate},
+			#{second.id},
+			#{imgSrc},
+			#{archive}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE affair_transfer_detail SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			ship_name = #{shipName},
+			no = #{no},
+			count = #{count},
+			total_count = #{totalCount},
+			audit_date = #{auditDate},
+			second_id = #{second.id},
+			img_src = #{imgSrc},
+			is_archive = #{archive}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE affair_transfer_detail SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

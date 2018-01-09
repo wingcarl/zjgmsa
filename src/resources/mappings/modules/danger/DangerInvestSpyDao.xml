@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.danger.dao.DangerInvestSpyDao">
+    
+	<sql id="dangerInvestSpyColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.spy_time AS "spyTime",
+		a.spy_note AS "spyNote",
+		u.name AS "createBy.name"
+		
+	</sql>
+	
+	<sql id="dangerInvestSpyJoins">
+		LEFT JOIN sys_user u on u.id = a.create_by
+	</sql>
+    
+	<select id="get" resultType="DangerInvestSpy">
+		SELECT 
+			<include refid="dangerInvestSpyColumns"/>
+		FROM danger_invest_spy a
+		<include refid="dangerInvestSpyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DangerInvestSpy">
+		SELECT 
+			<include refid="dangerInvestSpyColumns"/>
+		FROM danger_invest_spy a
+		<include refid="dangerInvestSpyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dangerInvestDetail.id != null and dangerInvestDetail.id != ''">
+				AND a.danger_invest = #{dangerInvestDetail.id}
+			</if>
+			<if test="beginSpyTime != null and endSpyTime != null and beginSpyTime != '' and endSpyTime != ''">
+				AND a.spy_time BETWEEN #{beginSpyTime} AND #{endSpyTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	<select id="findSpyList" resultType="DangerInvestStat">
+		select 
+			op.id AS "office.id",
+			op.name AS "office.name",
+			count(*) as "FollowTimes"
+			from danger_invest_spy spy 
+			left join danger_invest_detail inv on inv.id = spy.danger_invest 
+			left join danger_invest di on di.id=inv.danger_invest 
+			left join sys_office op on op.id=di.find_office 
+		<where>
+			spy.del_flag=0 and di.del_flag=0 
+			<if test="id != null and id != ''">
+				AND inv.id = #{id}
+			</if>
+		</where>
+		group by di.find_office	
+	</select>
+	<select id="findAllList" resultType="DangerInvestSpy">
+		SELECT 
+			<include refid="dangerInvestSpyColumns"/>
+		FROM danger_invest_spy a
+		<include refid="dangerInvestSpyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO danger_invest_spy(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			spy_time,
+			spy_note,
+			danger_invest
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{spyTime},
+			#{spyNote},
+			#{dangerInvestDetail.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE danger_invest_spy SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			spy_time = #{spyTime},
+			spy_note = #{spyNote},
+			danger_invest = #{dangerInvestDetail.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE danger_invest_spy SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.affair.dao.AffairTransferSecondDao">
+    
+	<sql id="affairTransferSecondColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.number AS "number",
+		a.destination AS "destination",
+		a.auditor AS "auditor",
+		a.audit_date AS "auditDate",
+		a.leaf_num AS "leafNum",
+		a.first_id AS "firstId.id",
+		a.receiver AS "receiver",
+		b.create_by AS "firstId.createBy.id",
+		b.create_date AS "firstId.createDate",
+		b.update_by AS "firstId.updateBy.id",
+		b.update_date AS "firstId.updateDate",
+		b.remarks AS "firstId.remarks",
+		b.del_flag AS "firstId.delFlag",
+		b.first_ship_name AS "firstId.firstShipName",
+		b.first_ship_departure AS "firstId.firstShipDeparture",
+		b.first_move_num AS "firstId.firstMoveNum",
+		b.first_cargo AS "firstId.firstCargo",
+		b.first_unload_port AS "firstId.firstUnloadPort",
+		b.first_in_out AS "firstId.firstInOut",
+		b.first_load AS "firstId.firstLoad",
+		b.number AS "firstId.number",
+		b.apply_office AS "firstId.applyOffice",
+		u.name AS "firstId.createBy.name",
+		b.contactor AS "firstId.contactor",
+		b.telephone AS "firstId.telephone",
+		b.office AS "firstId.office.id",
+		o.name AS "firstId.office.name",
+		u2.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="affairTransferSecondJoins">
+		LEFT JOIN affair_transfer_info b ON b.id = a.first_id
+		LEFT JOIN sys_user u ON u.id = b.update_by
+		LEFT JOIN sys_user u2 ON u2.id = a.update_by
+		LEFT JOIN sys_office o ON o.id = b.office
+	</sql>
+    
+	<select id="get" resultType="AffairTransferSecond">
+		SELECT 
+			<include refid="affairTransferSecondColumns"/>
+		FROM affair_transfer_second a
+		<include refid="affairTransferSecondJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="AffairTransferSecond">
+		SELECT 
+			<include refid="affairTransferSecondColumns"/>
+		FROM affair_transfer_second a
+		<include refid="affairTransferSecondJoins"/>
+		<where>
+			b.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="firstId!=null and firstId.beginCreateDate != null and firstId.endCreateDate != null and firstId.beginCreateDate != '' and firstId.endCreateDate != ''">
+				AND b.update_date BETWEEN #{firstId.beginCreateDate} AND #{firstId.endCreateDate}
+			</if>
+			<if test="firstId!=null and firstId.firstShipName != null and firstId.firstShipName != ''">
+				AND b.first_ship_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.firstShipName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.firstShipName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.firstShipName},'%')</if>
+			</if>
+			<if test="firstId!=null and firstId.firstShipDeparture != null and firstId.firstShipDeparture != ''">
+				AND b.first_ship_departure LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.firstShipDeparture}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.firstShipDeparture}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.firstShipDeparture},'%')</if>
+			</if>
+			<if test="firstId!=null and firstId.firstMoveNum != null and firstId.firstMoveNum != ''">
+				AND b.first_move_num LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.firstMoveNum}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.firstMoveNum}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.firstMoveNum},'%')</if>
+			</if>
+			<if test="firstId!=null and firstId.firstCargo != null and firstId.firstCargo != ''">
+				AND b.first_cargo LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.firstCargo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.firstCargo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.firstCargo},'%')</if>
+			</if>
+			<if test="firstId!=null and firstId.firstUnloadPort != null and firstId.firstUnloadPort != ''">
+				AND b.first_unload_port LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.firstUnloadPort}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.firstUnloadPort}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.firstUnloadPort},'%')</if>
+			</if>
+			<if test="firstId!=null and firstId.firstInOut != null and firstId.firstInOut != ''">
+				AND b.first_in_out = #{firstId.firstInOut}
+			</if>
+			<if test="firstId!=null and firstId.applyOffice != null and firstId.applyOffice != ''">
+				AND b.apply_office LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.applyOffice}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.applyOffice}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.applyOffice},'%')</if>
+			</if>
+			<if test="firstId!=null and firstId.office!=null and firstId.office.id != null and firstId.office.id != ''">
+				AND b.office LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firstId.office.id}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firstId.office.id}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firstId.office.id},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY b.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="AffairTransferSecond">
+		SELECT 
+			<include refid="affairTransferSecondColumns"/>
+		FROM affair_transfer_second a
+		<include refid="affairTransferSecondJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO affair_transfer_second(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			number,
+			destination,
+			auditor,
+			audit_date,
+			leaf_num,
+			first_id,
+			receiver
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{number},
+			#{destination},
+			#{auditor},
+			#{auditDate},
+			#{leafNum},
+			#{firstId.id},
+			#{receiver}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE affair_transfer_second SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			number = #{number},
+			destination = #{destination},
+			auditor = #{auditor},
+			audit_date = #{auditDate},
+			leaf_num = #{leafNum},
+			first_id = #{firstId.id},
+			receiver = #{receiver}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE affair_transfer_second SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE first_id = #{firstId.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

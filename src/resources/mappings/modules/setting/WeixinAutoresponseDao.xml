@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.setting.dao.WeixinAutoresponseDao">
+    
+	<sql id="weixinAutoresponseColumns">
+		a.id AS "id",
+		a.addtime AS "addtime",
+		a.keyword AS "keyword",
+		a.msgtype AS "msgtype",
+		a.rescontent AS "rescontent",
+		a.templatename AS "templatename",
+		a.accountid AS "accountid",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="weixinAutoresponseJoins">
+	</sql>
+    
+	<select id="get" resultType="WeixinAutoresponse">
+		SELECT 
+			<include refid="weixinAutoresponseColumns"/>
+		FROM weixin_autoresponse a
+		<include refid="weixinAutoresponseJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WeixinAutoresponse">
+		SELECT 
+			<include refid="weixinAutoresponseColumns"/>
+		FROM weixin_autoresponse a
+		<include refid="weixinAutoresponseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="accountid != null and accountid != ''">
+				and accountid = #{accountid}
+			</if>
+			<if test="keyword != null and keyword != ''">
+				AND a.keyword LIKE 
+					<if test="dbName == 'oracle'">'%'||#{keyword}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{keyword}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{keyword},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WeixinAutoresponse">
+		SELECT 
+			<include refid="weixinAutoresponseColumns"/>
+		FROM weixin_autoresponse a
+		<include refid="weixinAutoresponseJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO weixin_autoresponse(
+			id,
+			addtime,
+			keyword,
+			msgtype,
+			rescontent,
+			templatename,
+			accountid,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{addtime},
+			#{keyword},
+			#{msgtype},
+			#{rescontent},
+			#{templatename},
+			#{accountid},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE weixin_autoresponse SET 	
+			addtime = #{addtime},
+			keyword = #{keyword},
+			msgtype = #{msgtype},
+			rescontent = #{rescontent},
+			templatename = #{templatename},
+			accountid = #{accountid},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE weixin_autoresponse SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

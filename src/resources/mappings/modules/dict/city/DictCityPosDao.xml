@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dict.dao.city.DictCityPosDao">
+    
+	<sql id="dictCityPosColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.province AS "province",
+		a.city AS "city",
+		a.county AS "county",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude"
+	</sql>
+	
+	<sql id="dictCityPosJoins">
+	</sql>
+    
+	<select id="get" resultType="DictCityPos">
+		SELECT 
+			<include refid="dictCityPosColumns"/>
+		FROM dict_city_pos a
+		<include refid="dictCityPosJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DictCityPos">
+		SELECT 
+			<include refid="dictCityPosColumns"/>
+		FROM dict_city_pos a
+		<include refid="dictCityPosJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="province != null and province != ''">
+				AND a.province LIKE 
+					<if test="dbName == 'oracle'">'%'||#{province}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{province}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{province},'%')</if>
+			</if>
+			<if test="city != null and city != ''">
+				AND a.city LIKE 
+					<if test="dbName == 'oracle'">'%'||#{city}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{city}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{city},'%')</if>
+			</if>
+			<if test="county != null and county != ''">
+				AND a.county LIKE 
+					<if test="dbName == 'oracle'">'%'||#{county}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{county}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{county},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DictCityPos">
+		SELECT 
+			<include refid="dictCityPosColumns"/>
+		FROM dict_city_pos a
+		<include refid="dictCityPosJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dict_city_pos(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			province,
+			city,
+			county,
+			longitude,
+			latitude
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{province},
+			#{city},
+			#{county},
+			#{longitude},
+			#{latitude}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dict_city_pos SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			province = #{province},
+			city = #{city},
+			county = #{county},
+			longitude = #{longitude},
+			latitude = #{latitude}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dict_city_pos SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

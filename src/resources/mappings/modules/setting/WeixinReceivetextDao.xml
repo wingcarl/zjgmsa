@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.setting.dao.WeixinReceivetextDao">
+    
+	<sql id="weixinReceivetextColumns">
+		a.id AS "id",
+		a.content AS "content",
+		a.createtime AS "createtime",
+		a.fromusername AS "fromusername",
+		a.msgid AS "msgid",
+		a.msgtype AS "msgtype",
+		a.rescontent AS "rescontent",
+		a.response AS "response",
+		a.tousername AS "tousername",
+		a.accountid AS "accountid",
+		a.nickname AS "nickname",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="weixinReceivetextJoins">
+	</sql>
+    
+	<select id="get" resultType="WeixinReceivetext">
+		SELECT 
+			<include refid="weixinReceivetextColumns"/>
+		FROM weixin_receivetext a
+		<include refid="weixinReceivetextJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WeixinReceivetext">
+		SELECT 
+			<include refid="weixinReceivetextColumns"/>
+		FROM weixin_receivetext a
+		<include refid="weixinReceivetextJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="nickname != null and nickname != ''">
+				AND a.nickname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{nickname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{nickname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{nickname},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WeixinReceivetext">
+		SELECT 
+			<include refid="weixinReceivetextColumns"/>
+		FROM weixin_receivetext a
+		<include refid="weixinReceivetextJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO weixin_receivetext(
+			id,
+			content,
+			createtime,
+			fromusername,
+			msgid,
+			msgtype,
+			rescontent,
+			response,
+			tousername,
+			accountid,
+			nickname,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{content},
+			#{createtime},
+			#{fromusername},
+			#{msgid},
+			#{msgtype},
+			#{rescontent},
+			#{response},
+			#{tousername},
+			#{accountid},
+			#{nickname},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE weixin_receivetext SET 	
+			content = #{content},
+			createtime = #{createtime},
+			fromusername = #{fromusername},
+			msgid = #{msgid},
+			msgtype = #{msgtype},
+			rescontent = #{rescontent},
+			response = #{response},
+			tousername = #{tousername},
+			accountid = #{accountid},
+			nickname = #{nickname},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE weixin_receivetext SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
