@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.danger.dao.DangerCompanyDao">
+    
+	<sql id="dangerCompanyColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.name AS "name",
+		a.update_by AS "updateBy.id",
+		u.name AS "updateBy.name",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.type AS "type",
+		a.leader AS "leader",
+		a.telephone AS "telephone",
+		a.office AS "office.id",
+		a.remarks AS "remarks",
+		c.name AS "office.name"
+	</sql>
+	
+	<sql id="dangerCompanyJoins">
+		LEFT JOIN sys_office c ON c.id = a.office
+		LEFT JOIN sys_user u ON u.id = a.update_by
+	</sql>
+    
+	<select id="get" resultType="DangerCompany">
+		SELECT 
+			<include refid="dangerCompanyColumns"/>
+		FROM danger_company a
+		<include refid="dangerCompanyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DangerCompany">
+		SELECT 
+			<include refid="dangerCompanyColumns"/>
+		FROM danger_company a
+		<include refid="dangerCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="office != null and office.id != null and office.id != ''">
+				AND a.office = #{office.id}
+			</if>
+		</where>
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DangerCompany">
+		SELECT 
+			<include refid="dangerCompanyColumns"/>
+		FROM danger_company a
+		<include refid="dangerCompanyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO danger_company(
+			id,
+			create_by,
+			create_date,
+			name,
+			update_by,
+			update_date,
+			del_flag,
+			type,
+			leader,
+			telephone,
+			office,
+			remarks
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{name},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{type},
+			#{leader},
+			#{telephone},
+			#{office.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE danger_company SET 	
+			name = #{name},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			type = #{type},
+			leader = #{leader},
+			telephone = #{telephone},
+			office = #{office.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE danger_company SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

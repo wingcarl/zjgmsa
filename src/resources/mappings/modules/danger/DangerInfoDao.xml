@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.danger.dao.DangerInfoDao">
+    
+	<sql id="dangerInfoColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.del_flag AS "delFlag",
+		a.danger_company AS "dangerCompany",
+		a.danger_type AS "dangerType",
+		a.danger_detail AS "dangerDetail",
+		a.possbility AS "possbility",
+		a.result AS "result",
+		a.difficulty AS "difficulty",
+		a.level AS "level",
+		a.grade AS "grade",
+		a.find_way AS "findWay",
+		a.find_time AS "findTime",
+		a.find_office AS "findOffice.id",
+		o15.name AS "findOffice.name",
+		a.suggestion AS "suggestion",
+		a.liable AS "liable",
+		a.deal_result AS "dealResult",
+		a.complete_time AS "completeTime",
+		a.leader AS "leader",
+		a.update_by AS "updateBy.id",
+		u.name As "updateBy.name",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		company.name AS "dangerCompanyName",
+		a.is_complete AS "isComplete"
+	</sql>
+	
+	<sql id="dangerInfoJoins">
+		LEFT JOIN sys_office o15 ON o15.id = a.find_office
+		LEFT JOIN sys_user u on u.id = a.update_by
+		LEFT JOIN danger_company company on company.id= a.danger_company
+	</sql>
+    
+	<select id="get" resultType="DangerInfo">
+		SELECT 
+			<include refid="dangerInfoColumns"/>
+		FROM danger_info a
+		<include refid="dangerInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DangerInfo">
+		SELECT 
+			<include refid="dangerInfoColumns"/>
+		FROM danger_info a
+		<include refid="dangerInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dangerCompany != null and dangerCompany != ''">
+				AND a.danger_company = #{dangerCompany}
+			</if>
+			<if test="dangerType != null and dangerType != ''">
+				AND a.danger_type = #{dangerType}
+			</if>
+			<if test="possbility != null and possbility != ''">
+				AND a.possbility = #{possbility}
+			</if>
+			<if test="result != null and result != ''">
+				AND a.result = #{result}
+			</if>
+			<if test="difficulty != null and difficulty != ''">
+				AND a.difficulty = #{difficulty}
+			</if>
+			<if test="level != null and level != ''">
+				AND a.level = #{level}
+			</if>
+			<if test="grade != null and grade != ''">
+				AND a.grade = #{grade}
+			</if>
+			<if test="findWay != null and findWay != ''">
+				AND a.find_way = #{findWay}
+			</if>
+			<if test="beginFindTime != null and endFindTime != null and beginFindTime != '' and endFindTime != ''">
+				AND a.find_time BETWEEN #{beginFindTime} AND #{endFindTime}
+			</if>
+			<if test="findOffice != null and findOffice != ''">
+				AND a.find_office = #{findOffice.id}
+			</if>
+				<if test="isComplete != null and isComplete != ''">
+				AND a.is_complete = #{isComplete}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DangerInfo">
+		SELECT 
+			<include refid="dangerInfoColumns"/>
+		FROM danger_info a
+		<include refid="dangerInfoJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO danger_info(
+			id,
+			create_by,
+			create_date,
+			del_flag,
+			danger_company,
+			danger_type,
+			danger_detail,
+			possbility,
+			result,
+			difficulty,
+			level,
+			grade,
+			find_way,
+			find_time,
+			find_office,
+			suggestion,
+			liable,
+			deal_result,
+			complete_time,
+			leader,
+			update_by,
+			update_date,
+			remarks,
+			is_complete
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{delFlag},
+			#{dangerCompany},
+			#{dangerType},
+			#{dangerDetail},
+			#{possbility},
+			#{result},
+			#{difficulty},
+			#{level},
+			#{grade},
+			#{findWay},
+			#{findTime},
+			#{findOffice.id},
+			#{suggestion},
+			#{liable},
+			#{dealResult},
+			#{completeTime},
+			#{leader},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{isComplete}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE danger_info SET 	
+			danger_company = #{dangerCompany},
+			danger_type = #{dangerType},
+			danger_detail = #{dangerDetail},
+			possbility = #{possbility},
+			result = #{result},
+			difficulty = #{difficulty},
+			level = #{level},
+			grade = #{grade},
+			find_way = #{findWay},
+			find_time = #{findTime},
+			find_office = #{findOffice.id},
+			suggestion = #{suggestion},
+			liable = #{liable},
+			deal_result = #{dealResult},
+			complete_time = #{completeTime},
+			leader = #{leader},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			is_complete = #{isComplete}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE danger_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
