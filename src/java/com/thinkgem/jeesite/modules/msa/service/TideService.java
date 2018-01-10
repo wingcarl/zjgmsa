@@ -53,12 +53,9 @@ public class TideService {
 	public List<MsaTideHourly> findTideHourly(MsaTideHourly hour) {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.DAY_OF_MONTH, 10);
 		cal.add(Calendar.HOUR_OF_DAY, -12);
 		hour.setTideBeginTime(cal.getTime());
 		cal.setTime(new Date());
-		cal.add(Calendar.DAY_OF_MONTH, 10);
-
 		cal.add(Calendar.HOUR_OF_DAY, 12);
 		hour.setTideEndTime(cal.getTime());
 		List<MsaTideHourly> hourList = tideDao.findTideHourlyList(hour);

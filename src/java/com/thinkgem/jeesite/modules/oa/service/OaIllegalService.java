@@ -16,10 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.thinkgem.jeesite.common.persistence.Page;
 import com.thinkgem.jeesite.common.service.CrudService;
 import com.thinkgem.jeesite.modules.oa.entity.OaIllegal;
-<<<<<<< HEAD
-=======
+
 import com.thinkgem.jeesite.modules.msa.entity.MsaIndexStat;
->>>>>>> origin/master
+
 import com.thinkgem.jeesite.modules.oa.dao.OaIllegalDao;
 
 /**
