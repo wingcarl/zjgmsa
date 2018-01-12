@@ -4016,101 +4016,13 @@
                         <wx:font wx:val="仿宋_GB2312"/>
                         <w:b-cs/>
                         <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
+                        <w:sz-cs w:val="28"/> 
                         <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                    <w:t>据长江上海航道处18号电： 
-
-		   </w:t>
+                    </w:rPr> 
+                <w:t>${tonghang?replace("\r\n","</w:t></w:r></w:p><w:p><w:pPr><w:ind w:first-line-chars=\"200\" w:first-line=\"562\"/><w:rPr><w:rFonts w:ascii=\"SimSun\" w:fareast=\"仿宋_GB2312\" w:h-ansi=\"SimSun\" w:hint=\"fareast\"/><wx:font wx:val=\"SimSun\"/><w:sz w:val=\"28\"/></w:rPr></w:pPr><w:r><w:rPr><w:rFonts w:ascii=\"SimSun\" w:fareast=\"仿宋_GB2312\" w:h-ansi=\"SimSun\" w:hint=\"fareast\"/><wx:font wx:val=\"SimSun\"/><w:sz w:val=\"28\"/></w:rPr><w:t>")}</w:t>
+                
                 </w:r>
-	   </w:p>
-            <w:p wsp:rsidR="001D7AA7" wsp:rsidRPr="00E44225" wsp:rsidRDefault="001D7AA7" wsp:rsidP="00E1412C">
-                <w:pPr>
-                    <w:adjustRightInd w:val="off"/>
-                    <w:snapToGrid w:val="off"/>
-                    <w:spacing w:line="360" w:line-rule="auto"/>
-                    <w:ind w:first-line-chars="200" w:first-line="560"/>
-                    <w:rPr>
-                        <w:rFonts w:ascii="仿宋_GB2312" w:fareast="仿宋_GB2312" w:h-ansi="宋体"/>
-                        <wx:font wx:val="仿宋_GB2312"/>
-                        <w:b-cs/>
-                        <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
-                        <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                </w:pPr>
-                <w:r wsp:rsidRPr="00E44225">
-                    <w:rPr>
-                        <w:rFonts w:ascii="仿宋_GB2312" w:fareast="仿宋_GB2312" w:h-ansi="宋体" w:hint="fareast"/>
-                        <wx:font wx:val="仿宋_GB2312"/>
-                        <w:b-cs/>
-                        <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
-                        <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                    <w:t>  12月20日，浏海沙水道，根据12月19日测图显示，#42红浮下游1560米至下游1700米航标连线附近水域存在不满足10.5米（理论最低潮面下，下同）的浅点，最浅水深位于#42红浮下游1700米航标连线上为10.4米，请过往船舶注意避浅，以策安全。本通告自发布之日起30天内有效。
- 
-
-		   </w:t>
-                </w:r>
-	   </w:p>
- 		<w:p wsp:rsidR="001D7AA7" wsp:rsidRPr="00E44225" wsp:rsidRDefault="001D7AA7" wsp:rsidP="00E1412C">
-                <w:pPr>
-                    <w:adjustRightInd w:val="off"/>
-                    <w:snapToGrid w:val="off"/>
-                    <w:spacing w:line="360" w:line-rule="auto"/>
-                    <w:ind w:first-line-chars="200" w:first-line="560"/>
-                    <w:rPr>
-                        <w:rFonts w:ascii="仿宋_GB2312" w:fareast="仿宋_GB2312" w:h-ansi="宋体"/>
-                        <wx:font wx:val="仿宋_GB2312"/>
-                        <w:b-cs/>
-                        <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
-                        <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                </w:pPr>
-		<w:r wsp:rsidRPr="00E44225">
-                    <w:rPr>
-                        <w:rFonts w:ascii="仿宋_GB2312" w:fareast="仿宋_GB2312" w:h-ansi="宋体" w:hint="fareast"/>
-                        <wx:font wx:val="仿宋_GB2312"/>
-                        <w:b-cs/>
-                        <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
-                        <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                    <w:t> 12月21日，福姜沙水道（南水道），根据12月20日测图显示，（#49）黑浮至（#52）黑浮航标连线至航道内（20）米水域存在不满足（10.5）米（理论最低潮面下，下同）的浅点，最浅水深位于（#50）黑浮上游（470）米航标连线上为（9.2）米。
-
-		   </w:t>
-                </w:r>
-		</w:p>
-<w:p wsp:rsidR="001D7AA7" wsp:rsidRPr="00E44225" wsp:rsidRDefault="001D7AA7" wsp:rsidP="00E1412C">
-                <w:pPr>
-                    <w:adjustRightInd w:val="off"/>
-                    <w:snapToGrid w:val="off"/>
-                    <w:spacing w:line="360" w:line-rule="auto"/>
-                    <w:ind w:first-line-chars="200" w:first-line="560"/>
-                    <w:rPr>
-                        <w:rFonts w:ascii="仿宋_GB2312" w:fareast="仿宋_GB2312" w:h-ansi="宋体"/>
-                        <wx:font wx:val="仿宋_GB2312"/>
-                        <w:b-cs/>
-                        <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
-                        <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                </w:pPr>
-		<w:r wsp:rsidRPr="00E44225">
-                    <w:rPr>
-                        <w:rFonts w:ascii="仿宋_GB2312" w:fareast="仿宋_GB2312" w:h-ansi="宋体" w:hint="fareast"/>
-                        <wx:font wx:val="仿宋_GB2312"/>
-                        <w:b-cs/>
-                        <w:sz w:val="28"/>
-                        <w:sz-cs w:val="28"/>
-                        <w:lang w:val="ZH-CN"/>
-                    </w:rPr>
-                    <w:t>请过往船舶注意避浅，以策安全。 
-		   </w:t>
-                </w:r>
-            </w:p>
+	</w:p>
            
             <w:p wsp:rsidR="001D7AA7" wsp:rsidRPr="00E44225" wsp:rsidRDefault="001D7AA7" wsp:rsidP="00E1412C">
                 <w:pPr>
@@ -5112,7 +5024,7 @@
                         <w:sz w:val="28"/>
                         <w:sz-cs w:val="28"/>
                     </w:rPr>
-                    <w:t>沪通长江大桥28#墩主塔施工；沪通长江大桥29#墩主塔施工；26#、27#、30#、31#墩施工结束。
+                    <w:t>${hutong}
 </w:t>
                 </w:r>
             </w:p>

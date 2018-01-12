@@ -54,6 +54,10 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 import com.thinkgem.jeesite.modules.cruise.entity.CruiseStatics;
+import com.thinkgem.jeesite.modules.msa.entity.MsaHutongProject;
+import com.thinkgem.jeesite.modules.msa.entity.MsaTonghang;
+import com.thinkgem.jeesite.modules.msa.service.MsaHutongProjectService;
+import com.thinkgem.jeesite.modules.msa.service.MsaTonghangService;
 import com.thinkgem.jeesite.modules.msa.service.TideService;
 import com.thinkgem.jeesite.modules.oa.dao.OaCruisedataDao;
 
@@ -76,6 +80,10 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
 	private VtsWorkDataService  vtsWorkDataService;
 	@Autowired
 	private ScheduleDetailService  scheduleDetailService;
+	@Autowired
+	private MsaHutongProjectService  msaHutongProjectService;
+	@Autowired
+	private MsaTonghangService  msaTonghangService;
 	@Autowired
 	private TideService tideService;
 	public OaCruisedata get(String id) {
@@ -365,6 +373,7 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
           String dayOfYesterday = sdf.format(calendar.getTime());
           String details = dayOfYesterday +"至"+ dayOfToday;
           key.put("MdayDetails", details);
+          //设置vts数据
           VtsWorkData vts = new VtsWorkData();
           vts.setBeginCreateDate(oaReport.getCreateDate());
           vts.setEndCreateDate(oaReport.getCreateDate());
@@ -388,7 +397,7 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
           }
           Calendar ca = Calendar.getInstance();
           ca.setTime(oaReport.getCreateDate());
-          
+          //设置天气和水文情况
           SimpleDateFormat sdf1 = new SimpleDateFormat("气象台yyyy年M月d日16时发布的天气预报：");
           SimpleDateFormat sdf2 = new SimpleDateFormat("M月d日");
           String util = sdf1.format(ca.getTime());
@@ -398,14 +407,23 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
           key.put("chaoxidetail", chaoxiDetail);
           key.put("qxt", util);
           key.put("chaoxi", chaoxi);
-          
-          //设置vts数据
-
           //设置值班情况
           List<Map<String, Object>> scheduleList = scheduleDetailService.findSchedule(oaReport.getCreateDate());
           key.put("scheduleList", scheduleList);
-
-          
+          //设置沪通大桥情况
+          List<MsaHutongProject> hutongList = msaHutongProjectService.findList(new MsaHutongProject());
+          if(hutongList.get(0)!=null && hutongList.get(0).getContent()!=null){
+        	  key.put("hutong", hutongList.get(0).getContent());
+          }else{
+        	  key.put("hutong","");
+          }
+          //设置通航数据
+          List<MsaTonghang> tonghangList = msaTonghangService.findList(new MsaTonghang());
+          if(tonghangList.get(0)!=null && tonghangList.get(0).getContent()!=null){
+        	  key.put("tonghang", tonghangList.get(0).getContent());
+          }else{
+        	  key.put("tonghang","");
+          }
 		//FreeMarkers freemarker = new FreeMarkers();	   
 		//freemarker.createWord(list);
 		 // 提示：在调用工具类生成Word文档之前应当检查所有字段是否完整  
