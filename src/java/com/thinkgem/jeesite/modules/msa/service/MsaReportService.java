@@ -119,6 +119,9 @@ public class MsaReportService extends CrudService<MsaReportDao, MsaReport> {
 		if("1".equals(msaReportStat.getStatType())){ //按部门统计
 			//每个部门年度有在江苏局发表政务信息的任务，超过任务的每篇可以单独加30分
 			for(MsaReport r : reportList){
+				if(r.getDepid()==null){
+					continue;
+				}
 				Integer count = counter.get(r.getDepid().getName());  //计数
 				Integer score = scores.get(r.getDepid().getName()); //计分
 				Integer ztdy = ztdyCounter.get(r.getDepid().getName()); //专题调研

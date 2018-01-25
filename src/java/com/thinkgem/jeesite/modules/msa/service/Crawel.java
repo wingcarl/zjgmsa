@@ -62,7 +62,7 @@ import us.codecraft.webmagic.processor.PageProcessor;
 				
 				m.setReadingNum(date.substring(b1+5));
 				String dep = title.substring(titleIndex+1,title.length()-1);
-				String[] deps = dep.split(",");
+				String[] deps = dep.split(" ");
 				dep = deps[0];
 				Map<String,String> configs = this.getConfig();
 				String depId = configs.get(dep);

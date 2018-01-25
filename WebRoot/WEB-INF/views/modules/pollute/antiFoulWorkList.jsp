@@ -47,7 +47,7 @@
 				<sys:treeselect id="office" name="office" value="${antiFoulWork.office.id}" labelName="" labelValue="${antiFoulWork.office.name}"
 					title="部门" url="/sys/office/treeData?type=2" cssClass="input-small" allowClear="true" notAllowSelectParent="false"/>
 			</li>
-			<li><label>作业船名：</label>
+			<li><label>作业单位船名/车名：</label>
 				<form:input path="shipName" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
 			<li><label>作业单位：</label>
@@ -56,7 +56,7 @@
 					<form:options items="${fns:getDictList('pollutant_work_company')}" itemLabel="label" itemValue="value" htmlEscape="false"/>
 				</form:select>
 			</li>
-			<li><label>接收船名：</label>
+			<li><label>对象船名：</label>
 				<form:input path="receiveShipName" htmlEscape="false" maxlength="64" class="input-medium"/>
 			</li>
 			<li><label>作业地点：</label>
@@ -92,12 +92,12 @@
 			<tr>
 				<th>信息接收时间</th>
 				<th>所属单位</th>
-				<th>作业船名</th>
+				<th>作业单位<br>船名/车名</th>
 				<th>作业单位</th>
-				<th>接收船名</th>
+				<th>对象船名</th>
 				<th>作业地点</th>
 				<th>作业类别</th>
-				<th>作业<br>数量(吨)</th>
+				<th>作业数量<br>(吨/垃圾为立方)</th>
 				<th>残油<br>数量(吨)</th>
 				<th>油污水<br>数量(吨)</th>
 				<th>现场抽查</th>

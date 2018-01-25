@@ -21,6 +21,10 @@
 				$('#canyou').text('残油数量(吨)');
 				$('#youwu').show();
 
+			}else if($('#workType').val()=='2'){
+				$('#canyou').text('作业数量(立方)');
+				$('#youwu').hide();
+
 			}else{
 				$('#canyou').text('作业数量(吨)');
 				$('#youwu').hide();
@@ -72,6 +76,9 @@
 					$('#canyou').text('残油数量(吨)');
 					$('#youwu').show();
 
+				}else if($('#workType').val()=='2'){
+					$('#canyou').text('作业数量(立方)');
+					$('#youwu').hide();
 				}else{
 					$('#canyou').text('作业数量(吨)');
 					$('#youwu').hide();
@@ -167,7 +174,7 @@
 				</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">作业船名：</label>
+			<label class="control-label">作业单位船名/车名：</label>
 			<div class="controls">
 				<form:select id='shipName' path="shipName" class="input-xlarge ">
 					<form:option value="" label=""/>
@@ -175,21 +182,21 @@
 				</div>
 		</div>
 		<div class="control-group other-ship hide">
-			<label class="control-label">补充作业船名：</label>
+			<label class="control-label">补充作业单位船名/车名：</label>
 			<div class="controls">
 				<input name="otherShip" class="input-xlarge "/>	
 				</div>
 		</div>
 		<div class="control-group">
-			<label class="control-label" id="canyou">作业数量(吨)：</label>
+			<label class="control-label" id="canyou">作业数量(吨/垃圾为立方)：</label>
 			<div class="controls">
-				<form:input path="num" htmlEscape="false" maxlength="64" class="input-xlarge "/>
+				<form:input path="num" htmlEscape="false" maxlength="64" class="input-xlarge number"/>
 			</div>
 		</div>
 		<div class="control-group hide" id="youwu">
 			<label class="control-label">油污水数量(吨)：</label>
 			<div class="controls">
-				<form:input path="workNumYouwu" htmlEscape="false" maxlength="64" class="input-xlarge " value="0"/>
+				<form:input path="workNumYouwu" htmlEscape="false" maxlength="64" class="input-xlarge number" value="0"/>
 			</div>
 		</div>
 		<div class="control-group">
@@ -201,7 +208,7 @@
 		<div class="control-group">
 			<label class="control-label">开始时间：</label>
 			<div class="controls">
-				<input name="startTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
+				<input name="startTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${antiFoulWork.startTime}" pattern="yyyy-MM-dd HH:mm"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});"/>
 			</div>
@@ -209,7 +216,7 @@
 		<div class="control-group">
 			<label class="control-label">结束时间：</label>
 			<div class="controls">
-				<input name="endTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate "
+				<input name="endTime" type="text" readonly="readonly" maxlength="20" class="input-medium Wdate required"
 					value="<fmt:formatDate value="${antiFoulWork.endTime}" pattern="yyyy-MM-dd HH:mm"/>"
 					onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});"/>
 			</div>
@@ -217,7 +224,7 @@
 		<div class="control-group">
 			<label class="control-label">作业地点：</label>
 			<div class="controls">
-				<form:input path="workLocation" htmlEscape="false" maxlength="255" class="input-xlarge "/>
+				<form:input path="workLocation" htmlEscape="false" maxlength="255" class="input-xlarge required"/>
 			</div>
 		</div>
 		
