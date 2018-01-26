@@ -67,5 +67,10 @@ public class OfficeService extends TreeService<OfficeDao, Office> {
 		// TODO Auto-generated method stub
 		return officeDao.findHxtList(cruiseWeekPlan);
 	}
+
+	public List<Office> findByParentId(Office c) {
+		// TODO Auto-generated method stub
+		return officeDao.findByParentId(c);
+	}
 	
 }

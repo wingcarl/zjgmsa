@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.spring.dao.SpringDataDao">
+    
+	<sql id="springDataColumns">
+		a.id AS "id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.ship_num AS "shipNum",
+		a.create_office AS "createOffice",
+		a.input_date AS "inputDate",
+		a.ship_person_num AS "shipPersonNum",
+		a.ship_num_per AS "shipNumPer",
+		a.ship_person_num_per AS "shipPersonNumPer",
+		a.person_num AS "personNum",
+		a.person_num_per AS "personNumPer",
+		a.car_num AS "carNum",
+		a.car_num_per AS "carNumPer",
+		a.accident_num AS "accidentNum",
+		a.injury_num AS "injuryNum",
+		a.dead_num AS "deadNum",
+		a.missing_num AS "missingNum",
+		a.zfry_num AS "zfryNum",
+		a.zfcar_num AS "zfcarNum",
+		a.zfship_num AS "zfshipNum",
+		a.xhsj AS "xhsj",
+		a.xhlc AS "xhlc",
+		a.illegal_num AS "illegalNum",
+		a.xq_num AS "xqNum",
+		a.fbzl AS "fbzl",
+		a.aqxx AS "aqxx",
+		a.summary AS "summary",
+		c.name AS "createOffice.name",
+		u.name AS "updateBy.name"
+	</sql>
+	
+	<sql id="springDataJoins">
+		LEFT JOIN sys_user u on u.id = a.update_by
+		LEFT JOIN sys_office c on c.id = a.create_office
+	</sql>
+    
+	<select id="get" resultType="SpringData">
+		SELECT 
+			<include refid="springDataColumns"/>
+		FROM spring_data a
+		<include refid="springDataJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SpringData">
+		SELECT 
+			<include refid="springDataColumns"/>
+		FROM spring_data a
+		<include refid="springDataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="createOffice != null and createOffice != ''">
+				AND a.create_office = #{createOffice}
+			</if>
+			<if test="beginInputDate != null and endInputDate != null and beginInputDate != '' and endInputDate != ''">
+				AND a.input_date BETWEEN #{beginInputDate} AND #{endInputDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SpringData">
+		SELECT 
+			<include refid="springDataColumns"/>
+		FROM spring_data a
+		<include refid="springDataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO spring_data(
+			id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			del_flag,
+			ship_num,
+			create_office,
+			input_date,
+			ship_person_num,
+			ship_num_per,
+			ship_person_num_per,
+			person_num,
+			person_num_per,
+			car_num,
+			car_num_per,
+			accident_num,
+			injury_num,
+			dead_num,
+			missing_num,
+			zfry_num,
+			zfcar_num,
+			zfship_num,
+			xhsj,
+			xhlc,
+			illegal_num,
+			xq_num,
+			fbzl,
+			aqxx,
+			summary
+		) VALUES (
+			#{id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{shipNum},
+			#{createOffice.id},
+			#{inputDate},
+			#{shipPersonNum},
+			#{shipNumPer},
+			#{shipPersonNumPer},
+			#{personNum},
+			#{personNumPer},
+			#{carNum},
+			#{carNumPer},
+			#{accidentNum},
+			#{injuryNum},
+			#{deadNum},
+			#{missingNum},
+			#{zfryNum},
+			#{zfcarNum},
+			#{zfshipNum},
+			#{xhsj},
+			#{xhlc},
+			#{illegalNum},
+			#{xqNum},
+			#{fbzl},
+			#{aqxx},
+			#{summary}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE spring_data SET 	
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			ship_num = #{shipNum},
+			create_office = #{createOffice.id},
+			input_date = #{inputDate},
+			ship_person_num = #{shipPersonNum},
+			ship_num_per = #{shipNumPer},
+			ship_person_num_per = #{shipPersonNumPer},
+			person_num = #{personNum},
+			person_num_per = #{personNumPer},
+			car_num = #{carNum},
+			car_num_per = #{carNumPer},
+			accident_num = #{accidentNum},
+			injury_num = #{injuryNum},
+			dead_num = #{deadNum},
+			missing_num = #{missingNum},
+			zfry_num = #{zfryNum},
+			zfcar_num = #{zfcarNum},
+			zfship_num = #{zfshipNum},
+			xhsj = #{xhsj},
+			xhlc = #{xhlc},
+			illegal_num = #{illegalNum},
+			xq_num = #{xqNum},
+			fbzl = #{fbzl},
+			aqxx = #{aqxx},
+			summary = #{summary}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE spring_data SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

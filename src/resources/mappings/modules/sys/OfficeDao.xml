@@ -93,6 +93,14 @@
 		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
 		ORDER BY a.code
 	</select>
+	<select id="findByParentId" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_id = #{parent.id}
+		ORDER BY a.code
+	</select>
 	<select id="getParentOffice" resultType="Office">
 		SELECT
 			a.name

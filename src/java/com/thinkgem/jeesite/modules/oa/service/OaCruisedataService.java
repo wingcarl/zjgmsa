@@ -43,7 +43,9 @@ import com.thinkgem.jeesite.modules.oa.entity.PortData;
 
 import com.thinkgem.jeesite.modules.schedule.entity.ScheduleDetail;
 import com.thinkgem.jeesite.modules.schedule.service.ScheduleDetailService;
-
+import com.thinkgem.jeesite.modules.sys.entity.Office;
+import com.thinkgem.jeesite.modules.sys.entity.User;
+import com.thinkgem.jeesite.modules.sys.service.OfficeService;
 import com.thinkgem.jeesite.modules.sys.utils.UserUtils;
 import com.thinkgem.jeesite.modules.test.dao.OaCruisetimeDao;
 import com.thinkgem.jeesite.modules.test.entity.OaCruisetime;
@@ -86,6 +88,8 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
 	private MsaTonghangService  msaTonghangService;
 	@Autowired
 	private TideService tideService;
+	@Autowired
+	private OfficeService officeService;
 	public OaCruisedata get(String id) {
 		OaCruisedata oaCruisedata = super.get(id);
 		oaCruisedata.setOaCruisetimeList(oaCruisetimeDao.findList(new OaCruisetime(oaCruisedata)));
@@ -517,5 +521,21 @@ public class OaCruisedataService extends CrudService<OaCruisedataDao, OaCruiseda
 		oaCruiseStat.setBeginHappenDate(cal.getTime());
 		oaCruiseStat.setEndHappenDate(cal.getTime());
 		return this.getStatics(oaCruiseStat);
+	}
+
+	public OaCruisedata getDataByOfficeIdAndDate(Office office,Date date) {
+		OaCruisedata cruise = new OaCruisedata();
+		cruise.setCreateDate(date);
+		Office c = new Office();
+		c.setParent(office);
+		List<Office> officeList = officeService.findByParentId(c);
+		List<String> officeIdList = new ArrayList<String>();
+		for(Office o : officeList){
+			officeIdList.add(o.getId());
+		}
+		cruise.setOfficeList(officeIdList);
+		
+		cruise = oaCruisedataDao.getDataByOfficeAndDate(cruise);
+		return cruise;
 	}
 }

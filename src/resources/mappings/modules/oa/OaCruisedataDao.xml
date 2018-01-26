@@ -261,6 +261,29 @@
 		${sqlMap.dsf}
 		
 	</select>
+	
+	<select id="getDataByOfficeAndDate" resultType="OaCruisedata">
+		SELECT
+				a.id AS "id",
+				a.cdzfrycs As "cdzfrycs",
+				a.ffxczl AS "ffxczl",
+				a.fxwz AS "fxwz"
+				FROM oa_cruisedata a
+				<include refid="oaCruisedataJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+					<if test="officeList != null and officeList.size()>0">
+						AND c.id IN
+						<foreach item="item" index="index" collection="officeList" open="(" separator="," close=")">
+							#{item}
+						</foreach>
+					</if>
+				<if test="createDate != null and createDate != '' ">
+					AND  DATE_FORMAT(a.create_date,'%Y-%m-%d') =  DATE_FORMAT(#{createDate} ,'%Y-%m-%d')
+				</if>
+				ORDER BY a.create_date DESC LIMIT 1
+		</where>
+	</select>
 	<select id="getCruisedataByDate1" resultType="OaCruisedata">
 		SELECT 
 				a.id AS "id",

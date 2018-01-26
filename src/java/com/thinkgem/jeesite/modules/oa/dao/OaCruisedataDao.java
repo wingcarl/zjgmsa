@@ -41,5 +41,7 @@ public interface OaCruisedataDao extends CrudDao<OaCruisedata> {
 	List<Map<String, Object>> getCruiseYehangByDate(Date beginHappenDate, Date endHappenDate);
 
 	List<Map<String, Object>> getTodayStatics(String date);
+
+	OaCruisedata getDataByOfficeAndDate(OaCruisedata cruise);
 	
 }

@@ -25,5 +25,7 @@ public interface OfficeDao extends TreeDao<Office> {
 	Office getParent(Office office);
 
 	List<Office> findHxtList(CruiseWeekPlan cruiseWeekPlan);
+
+	List<Office> findByParentId(Office c);
 	
 }

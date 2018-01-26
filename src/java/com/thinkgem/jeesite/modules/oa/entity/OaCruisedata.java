@@ -62,6 +62,7 @@ public class OaCruisedata extends DataEntity<OaCruisedata> {
 	private Integer yhsc = 0;
 	private double yhtime = 0;
 	private boolean editable = false;
+	private List<String> officeList;
 	public OaCruisedata() {
 		super();
 	}
@@ -357,6 +358,16 @@ public class OaCruisedata extends DataEntity<OaCruisedata> {
 
 	public void setYhtime(double yhtime) {
 		this.yhtime = yhtime;
-	}	
+	}
+
+	public List<String> getOfficeList() {
+		return officeList;
+	}
+
+	public void setOfficeList(List<String> officeList) {
+		this.officeList = officeList;
+	}
+
+	
 	
 }
